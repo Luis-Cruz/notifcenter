@@ -2,6 +2,7 @@ package pt.utl.ist.notifcenter.servlet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pt.utl.ist.notifcenter.domain.Aplicacao;
 import pt.utl.ist.notifcenter.domain.SistemaNotificacoes;
 
 import javax.servlet.ServletContextEvent;
@@ -17,9 +18,11 @@ public class NotifcenterInitializer implements ServletContextListener {
     public void contextInitialized(ServletContextEvent event) {
 
         logger.info( "Starting application..." );
-
         String id = SistemaNotificacoes.getInstance().getExternalId();
-        System.out.println("###################################################### SistemaNotificacoes external id:" + id);
+        System.out.println("################################################# SistemaNotificacoes external id:" + id);
+
+        //carregar cache de Aplicacoes (usada para pesquisa rápida de Aplicacoes por nome):
+        Aplicacao.loadCacheAplicacoes();
     }
 
     @Override
