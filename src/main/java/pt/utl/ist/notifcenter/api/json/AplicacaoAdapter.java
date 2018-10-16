@@ -7,7 +7,6 @@ import org.fenixedu.bennu.core.domain.exceptions.BennuCoreDomainException;
 import org.fenixedu.bennu.core.json.JsonAdapter;
 import org.fenixedu.bennu.core.json.JsonBuilder;
 import pt.utl.ist.notifcenter.domain.Aplicacao;
-import pt.utl.ist.notifcenter.domain.SistemaNotificacoes;
 
 @DefaultJsonAdapter(Aplicacao.class)
 public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
@@ -15,8 +14,12 @@ public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
     @Override
     public Aplicacao create(JsonElement jsonElement, JsonBuilder ctx) {
         final JsonObject jObj = jsonElement.getAsJsonObject();
-        String nome = getRequiredValue(jObj, "name");
-        return Aplicacao.createAplicacao(nome);
+        String name = getRequiredValue(jObj, "name");
+        String redirectUrl = getRequiredValue(jObj, "redirect_uri");
+        String description = getRequiredValue(jObj, "description");
+        String authorName = getRequiredValue(jObj, "author");
+        String siteUrl = getRequiredValue(jObj, "site_url");
+        return Aplicacao.createAplicacao(name, redirectUrl, description, authorName, siteUrl);
     }
 
     @Override
@@ -30,13 +33,14 @@ public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
     @Override
     public JsonElement view(Aplicacao obj, JsonBuilder ctx) {
         JsonObject jObj = new JsonObject();
-        jObj.addProperty("id", obj.getExternalId());
+        jObj.addProperty("client_id", obj.getExternalId());
         jObj.addProperty("name", obj.getName());
         jObj.addProperty("author", obj.getAuthorName());
         jObj.addProperty("permissoes", obj.getPermissoesAplicacao().name());
         jObj.addProperty("description", obj.getDescription());
-        jObj.addProperty("site url", obj.getSiteUrl());
-        jObj.addProperty("secret", obj.getSecret());
+        jObj.addProperty("site_url", obj.getSiteUrl());
+        jObj.addProperty("redirect_uri", obj.getRedirectUrl());
+        jObj.addProperty("client_secret", obj.getSecret());
         return jObj;
     }
 
