@@ -5,8 +5,11 @@ import com.google.gson.JsonObject;
 import org.apache.avro.data.Json;
 import org.fenixedu.bennu.core.rest.BennuRestResource;
 
+import org.fenixedu.bennu.core.security.SkipCSRF;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 
+import org.fenixedu.bennu.spring.security.CSRFToken;
+import org.fenixedu.bennu.spring.security.CSRFTokenRepository;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import pt.utl.ist.notifcenter.api.json.AplicacaoAdapter;
@@ -32,7 +35,7 @@ public class AplicacaoResource extends BennuRestResource {
                 4. Sistema verifca e guarda confgurações.
     */
 
-        /*
+    /*
 
     Os problemas de CSRF nos posts resolvem-se enviadno o header:
 
@@ -86,20 +89,21 @@ public class AplicacaoResource extends BennuRestResource {
         return view(jObj, AplicacaoAdapter.class);
     }
 
+    //ver cd ./notifcenter/bennu-5.2.1/bennu-spring/src/main/java/org/fenixedu/bennu/spring/security //CSRFToken token = new CSRFToken("awd");
+    @SkipCSRF
     @RequestMapping(value = "/oauth/addapplication", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement addApplication(@RequestParam(value="description") String description, @RequestParam(value="name") String name, @RequestParam(value="redirect_uri") String redirectUrl, @RequestParam(value="author", defaultValue = "none") String authorName, @RequestParam(value="site_url", defaultValue = "none") String siteUrl) {
+    public String addApplication(@RequestParam(value="description") String description, @RequestParam(value="name") String name, @RequestParam(value="redirect_uri") String redirectUrl, @RequestParam(value="author", defaultValue = "none") String authorName, @RequestParam(value="site_url", defaultValue = "none") String siteUrl) {
 
         if (Aplicacao.findByAplicacaoName(name) != null) {
             JsonObject jObj = new JsonObject();
             jObj.addProperty("error", "applicationNameAlreadyRegistered");
             jObj.addProperty("error_description", "Such application name is already registered.");
-            return jObj;
+            return jObj.toString();
         }
 
         Aplicacao app = Aplicacao.createAplicacao(name, redirectUrl, description, authorName, siteUrl);
-        return view(app, AplicacaoAdapter.class);
+        return view(app, AplicacaoAdapter.class).toString();
     }
-
 
     /*
     @RequestMapping(value = "/remetente/{app}/adicionar", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
