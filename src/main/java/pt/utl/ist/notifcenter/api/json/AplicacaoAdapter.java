@@ -27,14 +27,14 @@ public class AplicacaoAdapter implements JsonAdapter<Aplicacao> {
         final JsonObject jObj = jsonElement.getAsJsonObject();
         String nome = getRequiredValue(jObj, "name");
         ///outros parametros (será que ctx pode ajudar?)
-        return app.updateAplicacaoName(nome);
+        return app.setAppName(nome);
     }
 
     @Override
     public JsonElement view(Aplicacao obj, JsonBuilder ctx) {
         JsonObject jObj = new JsonObject();
-        jObj.addProperty("client_id", obj.getExternalId());
         jObj.addProperty("name", obj.getName());
+        jObj.addProperty("client_id", obj.getExternalId());
         jObj.addProperty("author", obj.getAuthorName());
         jObj.addProperty("permissoes", obj.getPermissoesAplicacao().name());
         jObj.addProperty("description", obj.getDescription());

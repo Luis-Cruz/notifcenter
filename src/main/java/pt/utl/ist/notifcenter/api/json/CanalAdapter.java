@@ -6,30 +6,32 @@ import org.fenixedu.bennu.core.annotation.DefaultJsonAdapter;
 import org.fenixedu.bennu.core.domain.exceptions.BennuCoreDomainException;
 import org.fenixedu.bennu.core.json.JsonAdapter;
 import org.fenixedu.bennu.core.json.JsonBuilder;
-import pt.utl.ist.notifcenter.domain.ExemploIdentidade;
+import pt.utl.ist.notifcenter.domain.Canal;
 
-@DefaultJsonAdapter(ExemploIdentidade.class)
-public class ExemploIdentidadeAdapter implements JsonAdapter<ExemploIdentidade> {
+@DefaultJsonAdapter(Canal.class)
+public class CanalAdapter implements JsonAdapter<Canal> {
 
     @Override
-    public ExemploIdentidade create(JsonElement jsonElement, JsonBuilder ctx) {
+    public Canal create(JsonElement jsonElement, JsonBuilder ctx) {
         final JsonObject jObj = jsonElement.getAsJsonObject();
-        String nome = getRequiredValue(jObj, "name");
-        return ExemploIdentidade.createExemploIdentidade(nome);
+        String email = getRequiredValue(jObj, "email");
+        String password = getRequiredValue(jObj, "password");
+        return Canal.createCanal(email, password);
     }
 
     @Override
-    public ExemploIdentidade update(JsonElement jsonElement, ExemploIdentidade app, JsonBuilder ctx) {
-        final JsonObject jObj = jsonElement.getAsJsonObject();
-        String param1 = getRequiredValue(jObj, "param1");
-        return app.updateExemploIdentidade(param1);
+    public Canal update(JsonElement jsonElement, Canal Canal, JsonBuilder ctx) {
+
+        return null;
     }
 
     @Override
-    public JsonElement view(ExemploIdentidade obj, JsonBuilder ctx) {
+    public JsonElement view(Canal obj, JsonBuilder ctx) {
         JsonObject jObj = new JsonObject();
-        jObj.addProperty("param1", obj.getParam1());
+        jObj.addProperty("type", obj.getClass().getSimpleName());
         jObj.addProperty("id", obj.getExternalId());
+        jObj.addProperty("email", obj.getEmail());
+        jObj.addProperty("password", obj.getPassword());
         return jObj;
     }
 

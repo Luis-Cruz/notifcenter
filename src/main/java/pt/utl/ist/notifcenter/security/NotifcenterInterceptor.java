@@ -3,17 +3,14 @@ package pt.utl.ist.notifcenter.security;
 import com.google.common.base.Strings;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.security.Authenticate;
+import org.fenixedu.bennu.oauth.annotation.OAuthEndpoint;
 import org.fenixedu.bennu.oauth.domain.ApplicationUserSession;
 import org.fenixedu.bennu.oauth.domain.ExternalApplication;
 import org.fenixedu.bennu.oauth.domain.ExternalApplicationScope;
 import org.fenixedu.bennu.oauth.util.OAuthUtils;
-import org.fenixedu.commons.i18n.LocalizedString;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-import pt.ist.fenixframework.Atomic;
-import pt.ist.fenixframework.FenixFramework;
-import pt.utl.ist.notifcenter.domain.Aplicacao;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,7 +18,6 @@ import java.lang.annotation.Annotation;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Optional;
-import java.util.Set;
 
 public class NotifcenterInterceptor implements HandlerInterceptor {
 
@@ -95,12 +91,21 @@ public class NotifcenterInterceptor implements HandlerInterceptor {
                     return false;
                 }
 
-                /*
-                if (!app.getScopesSet().contains(scope.get())) {
-                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "Application doesn't have permissions to this endpoint!");
-                    return false;
+                //My scopes:
+                if (doesHandlerHasAnnotation(handler, OAuthEndpoint.class)) {
+                    final OAuthEndpoint endpoint = ((HandlerMethod) handler).getMethod().getAnnotation(OAuthEndpoint.class);
+                    Optional<ExternalApplicationScope> scope = ExternalApplicationScope.forKey(endpoint.value());
+
+                    if (scope.isPresent()) {
+                        if (!app.getScopesSet().contains(scope.get())) {
+                            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Application doesn't have scope permissions to this endpoint!");
+                            return false;
+                        }
+                    }
+                    else{
+                        System.out.println("WARNING: Scope '" + endpoint.value() + "' on handler method '" + ((HandlerMethod) handler).getMethod().toString() + "' is not registered in Bennu!");
+                    }
                 }
-                */
 
                 if (!appUserSession.matchesAccessToken(accessToken)) {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Access token doesn't match!");
@@ -121,6 +126,8 @@ public class NotifcenterInterceptor implements HandlerInterceptor {
 
                 Authenticate.mock(foundUser, "OAuth Access Token");
             }
+
+
         }
 
         return true;

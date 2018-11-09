@@ -1,17 +1,17 @@
 package pt.utl.ist.notifcenter.domain;
 
 import org.fenixedu.bennu.core.domain.exceptions.BennuCoreDomainException;
-import org.fenixedu.bennu.oauth.domain.ApplicationUserAuthorization;
-import org.fenixedu.bennu.oauth.domain.ApplicationUserSession;
-import org.fenixedu.bennu.oauth.domain.ServiceApplication;
-import org.fenixedu.bennu.oauth.domain.ServiceApplicationAuthorization;
+import org.fenixedu.bennu.oauth.domain.*;
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.FenixFramework;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-//import pt.ist.fenixframework.consistencyPredicates.ConsistencyPredicate;
+//TEST:
+//List<ExternalApplicationScope> mainList = new ArrayList<>(FenixFramework.getDomainRoot().getBennu().getScopesSet());
+//app.updateAplicacaoScopes(mainList);
 
 public class Aplicacao extends Aplicacao_Base {
 
@@ -56,16 +56,23 @@ public class Aplicacao extends Aplicacao_Base {
     }
 
     @Atomic
-    public Aplicacao updateAplicacaoName(final String nome) {
+    public Aplicacao setAppName(final String nome) {
         this.setName(nome);
         return this;
     }
-    
-    /*
-    public void updatePermissions(AppPermissions permissions){
-        this.setPermissoesAplicacao(permissions);
+
+    @Atomic
+    public Aplicacao setAppPermissions(final AppPermissions appPermissions) {
+        this.setPermissoesAplicacao(appPermissions);
+        return this;
     }
-    */
+
+    @Atomic
+    public Aplicacao setAppScopes(final List<ExternalApplicationScope> newScopes) {
+        this.setScopeList(newScopes);
+        return this;
+    }
+
 
     // para otimizacao da pesquisa de determinada Aplicacao por nome (retirado de ../bennu/core/domain/User):
     public static Aplicacao findByAplicacaoName(final String aplicacaoName) {
@@ -83,7 +90,7 @@ public class Aplicacao extends Aplicacao_Base {
         return match;
     }
 
-    private static Aplicacao manualFind(String aplicacaoName) {
+    private static Aplicacao manualFind(final String aplicacaoName) {
         for (final Aplicacao app: SistemaNotificacoes.getInstance().getAplicacoesSet()) {
             cacheAplicacao(app);
             if (app.getName().equals(aplicacaoName)) {
@@ -103,5 +110,19 @@ public class Aplicacao extends Aplicacao_Base {
             cacheAplicacao(app);
         }
     }
+
+    /*
+    public Remetente doesHaveRemetente(final String remetente) {
+
+        for (final Remetente r: this.getRemetentesSet()) {
+            if(r.getNome().equals(remetente)) {
+                return r;
+            }
+        }
+
+        return null;
+    }
+    */
+
 
 }
