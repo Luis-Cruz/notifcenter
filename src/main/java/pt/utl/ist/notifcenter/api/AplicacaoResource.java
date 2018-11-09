@@ -1,19 +1,36 @@
 // Pedidos disponíveis:
-//POST http://localhost:8080/notifcenter/apiaplicacoes/oauth/addaplicacao?name=app_77&redirect_uri=http://app77_site.com/code&description=descricao_app77
-//GET http://localhost:8080/notifcenter/apiaplicacoes/oauth/viewaplicacao/281736969715746?access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
-//POST http://localhost:8080/notifcenter/oauth/refresh_token?client_id=281736969715746&client_secret=HaEPQ/D6JhIUltRl4MiEvhKIQR52cJuOhQHlCey0ZC/uX8le/LftpRkN9M/4SjslzO6RqRyrYS03QifOLFY%2BsA==&refresh_token=NTYzMTYwNDA2ODE4ODIwOjY3OGI2MTRhOGViYWI2ZDQyYzljZDEwYWJlYTdmNzM4OWMyZTZkN2U5MTgyNjlkODFmMzk1N2QxNWIzMjhlMDM4MWNmZWZlNDBjY2U0M2I1ZWE5ZDNlNmI1Yjc4YWY3NmU5OWQ3MjU0YjIwYjRkNDE3YTVmZDFiNzQ4ODM3YWNk&grant_type=refresh_token
-//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715746/addremetente?name=ric&access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
-//GET http://localhost:8080/notifcenter/apiaplicacoes/281736969715746/listremetentes?access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
-//GET/POST http://localhost:8080/notifcenter/apiaplicacoes/notifcentercallback
-//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715746/addcanalnotificacao?canal=281818574094339&remetente=281724084813830
-//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715746/281582350893057/adddadoscontacto?canal=281840048930837&data=dados1contacto@ex.com
 
+//DADOS EXEMPLO:
+//app "app_77": 281736969715714
+//remetente "rem1": 281724084813826
+//user "bennu0": 281582350893059
+//user "admin": 281582350893057
+//grupo "managers": 281702609977345
+//canal TwilioWhatsApp: 281835753963522
+//pedido de canal de notificacao: 281775624421378
+
+//REGISTAR APP:
+//POST http://localhost:8080/notifcenter/apiaplicacoes/oauth/addaplicacao?name=app_77&redirect_uri=http://app77_site.com/code&description=descricao_app77
+//GET http://localhost:8080/notifcenter/oauth/userdialog?client_id=281736969715714&redirect_uri=http://app77_site.com/code
+//POST http://localhost:8080/notifcenter/oauth/access_token?client_id=281736969715714&client_secret=y3MW4pX%2B3hGu9DbfSpYYtFx71llEx5qCpKsJdWrtlVjuG9%2FRozatZkYvWj9FbHkDEM52%2B3oWUuRCI7HYowXEfw%3D%3D&redirect_uri=http://app77_site.com/code&code=d46d6939c0564846fed10cdcb3233b18716f6fb5770d3f58c134379e43316d138471e47d42f1a49160c65c22577180705fc615df027e0017a68f47f4b595a0c3&grant_type=authorization_code
+//POST http://localhost:8080/notifcenter/oauth/refresh_token?client_id=281736969715714&client_secret=y3MW4pX%2B3hGu9DbfSpYYtFx71llEx5qCpKsJdWrtlVjuG9%2FRozatZkYvWj9FbHkDEM52%2B3oWUuRCI7HYowXEfw%3D%3D&refresh_token=MjgxNjg1NDMwMTA4MTYzOjdhOWIzNDIyNTRmZDIzN2ZmODQ4N2U2NjFjMjllYWQyODAxYjhhZWMwNDFiZDhiZDU1MDEwZjI5OWNiZmQzOGI3NDQwMGEwZGNhMTAwMjFhYjMyOTYwN2U2NDJkNjMzMWMwZDQ3YmFjYmNkZDk2ZjA3ZGQ3ZmI0NTMyZTg3MzRj&grant_type=refresh_token
+
+//METODOS
+//POST http://localhost:8080/notifcenter/apiaplicacoes/oauth/addaplicacao?name=app_77&redirect_uri=http://app77_site.com/code&description=descricao_app77
+//GET http://localhost:8080/notifcenter/apiaplicacoes/oauth/viewaplicacao/281736969715714?access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi/POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/addremetente?name=ric&access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
+//GET http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/listremetentes?access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
+//GET/POST http://localhost:8080/notifcenter/apiaplicacoes/notifcentercallback
+//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/pedidocanalnotificacao?canal=281835753963522&remetente=281724084813826
+//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281582350893057/adddadoscontacto?canal=281835753963522&data=dados1contacto@ex.com
+
+//UTEIS:
+//http://localhost:8080/notifcenter/apiaplicacoes/viewcanal/281835753963522
 //http://localhost:8080/notifcenter/apiaplicacoes/listcanais
 //http://localhost:8080/notifcenter/apiaplicacoes/listusers
 //http://localhost:8080/notifcenter/apiaplicacoes/listapps
 //http://localhost:8080/notifcenter/apiaplicacoes/listgroups
-//http://localhost:8080/notifcenter/apiaplicacoes/isusergroupmember?user=281582350893058&group=281702609977347
-//http://localhost:8080/notifcenter/apiaplicacoes/isusergroupmember?user=281582350893059&group=281779919388677
+//"no" http://localhost:8080/notifcenter/apiaplicacoes/isusergroupmember?user=281582350893059&group=281702609977345
+//"yes" http://localhost:8080/notifcenter/apiaplicacoes/isusergroupmember?user=281582350893057&group=281702609977345
 
 package pt.utl.ist.notifcenter.api;
 
@@ -28,13 +45,11 @@ import org.fenixedu.bennu.core.rest.BennuRestResource;
 import org.fenixedu.bennu.core.security.SkipCSRF;
 import org.fenixedu.bennu.io.domain.FileStorage;
 import org.fenixedu.bennu.io.domain.GenericFile;
-import org.fenixedu.bennu.io.domain.GroupBasedFile;
 import org.fenixedu.bennu.io.servlet.FileDownloadServlet;
 import org.fenixedu.bennu.oauth.annotation.OAuthEndpoint;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 
 import org.joda.time.DateTime;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
@@ -114,13 +129,9 @@ public class AplicacaoResource extends BennuRestResource {
 
     // CANAL NOTIFICACAO
 
-    //app id: 281736969715746/addcanalnotificacao
-    //canal id:  281818574094339
-    //remetente id: 281724084813830
-
     @SkipCSRF
     @RequestMapping(value = "/{app}/pedidocanalnotificacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement addCanalNotificacao(@PathVariable("app") Aplicacao app,
+    public JsonElement pedidoCanalNotificacao(@PathVariable("app") Aplicacao app,
                                            @RequestParam("canal") Canal canal,
                                            @RequestParam("remetente") Remetente remetente) {
 
@@ -168,12 +179,7 @@ public class AplicacaoResource extends BennuRestResource {
 
         //store file in system
 
-        GenericFile gf = new GenericFile() {
-            @Override
-            public boolean isAccessible(User user) {
-                return true;
-            }
-        };
+        ///GenericFile gf =...
 
         //FALTA RESTO (Primeiro perceber o genericfile
 
@@ -194,135 +200,61 @@ public class AplicacaoResource extends BennuRestResource {
         return convFile;
     }
 
-    //curl -X POST http://localhost:8080/notifcenter/apiaplicacoes/upload
+    //curl -F 'file=@/home/cr/imgg.png' http://localhost:8080/notifcenter/apiaplicacoes/upload
     @SkipCSRF
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
-    public String uploadFile() {
+    public String uploadFile(@RequestParam(value = "file") MultipartFile file) {
 
-        byte[] myvar = "somestring".getBytes();
-        ExtendGenericFile e = ExtendGenericFile.createExtendGenericFile("display1", "filename1", myvar);
+        ///System.out.println("fenix storages: " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(FileStorage::getName).collect(Collectors.joining(",")));
 
-        return "ok!";
+        System.out.println(" ");
+        System.out.println("files in fenix (2): " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(e -> e.getFileSet().stream().map(GenericFile::getDisplayName).collect(Collectors.joining(","))).collect(Collectors.joining("|")));
+        System.out.println(" ");
+
+        Attachment at;
+        String toreturn = "ok\n";
+
+        try{
+            at = Attachment.createAttachment(file.getOriginalFilename(), "lowlevelname-" + file.getOriginalFilename(), file.getInputStream());
+
+            System.out.println("getOriginalFileName: " + file.getOriginalFilename());
+
+            toreturn = FileDownloadServlet.getDownloadUrl(at) + "\n";
+
+            System.out.println("getDownloadUrl(): " + FileDownloadServlet.getDownloadUrl(at));
+
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+
+        return toreturn;
     }
 
 
-
-
-
-    //curl -F 'file=@/home/cr/imgg.png' http://localhost:8080/notifcenter/apiaplicacoes/upload
-    //example group id: 281702609977347
+    //SAVE FILE FROM OWN COMPUTER(TEST)
     @SkipCSRF
-    @RequestMapping(value = "/upload2", method = RequestMethod.POST)
-    public String uploadFile2(@RequestParam(value = "file", required = false) MultipartFile file
-            /*@RequestParam("group") PersistentGroup group*/) {
+    @RequestMapping(value = "/uploadcomfiletxt", method = RequestMethod.POST)
+    public String uploadFileTXT(@RequestParam(value = "filename", defaultValue = "/home/cr/file.txt") String filename) {
 
-
-        System.out.println("fenix storages: " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(FileStorage::getName).collect(Collectors.joining(",")));
+        System.out.println(" ");
+        System.out.println("files in fenix (2): " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(e -> e.getFileSet().stream().map(GenericFile::getDisplayName).collect(Collectors.joining(","))).collect(Collectors.joining("|")));
         System.out.println(" ");
 
-
-       /* GenericFile gf = new GenericFile() {
-            @Override
-            public boolean isAccessible(User user) {
-                return true;
-            }
-
-        };
-        */
-
-        byte[] myvar = "Any String you want".getBytes();
-        ExtendGenericFile e = ExtendGenericFile.createExtendGenericFile("display1", "filename1", myvar);
-
-
-        ///GroupBasedFile gbf = new GroupBasedFile("display1", "filename1", myvar, group);
-
-
-
-        /*
-
-        System.out.println("files in fenix (1):");
-        for (FileStorage fs : FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet()) {
-            for (GenericFile f : fs.getFileSet()) {
-                System.out.println(f.getDisplayName());
-            }
-        }
-        System.out.println(" ");
-        System.out.println("files in fenix: (2):");
-        System.out.println("files in fenix: " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(e -> e.getFileSet().stream().map(GenericFile::getDisplayName).collect(Collectors.joining(","))).collect(Collectors.joining("|")));
-        System.out.println(" ");
+        Attachment at;
+        File file;
 
         try{
-            String st = FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage().store(gf, convert(file));
-            System.out.println("String store(GenericFile, File) returns: " + st);
-            System.out.println(" ");
+            Resource filee = new FileSystemResource(filename);
+            file = filee.getFile();
+
+            System.out.println("getAbsolutePath: " + file.getAbsolutePath());
+
+            at = Attachment.createAttachment("prettyname2", "lowlevelname2", file);
         }
         catch (IOException e){
-            System.out.println(" io error exception :(");
+            e.printStackTrace();
         }
-
-        String i = new String(FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage().read(gf));
-        System.out.println("byte[] read(GenericFile) returns: " + i);
-        System.out.println(" ");
-
-        System.out.println("getDownloadUrl(): " + FileDownloadServlet.getDownloadUrl(gf));
-        System.out.println(" ");
-
-        */
-
-        return "ok";
-    }
-
-    @SkipCSRF
-    @RequestMapping(value = "/upload7", method = RequestMethod.POST)
-    public String uploadFile7(@RequestParam(value = "file", required = false) MultipartFile file) {
-
-        System.out.println("fenix storages: " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(FileStorage::getName).collect(Collectors.joining(",")));
-        System.out.println(" ");
-
-        /*
-        GenericFile gf = new GenericFile() {
-            @Override
-            public boolean isAccessible(User user) {
-                return true;
-            }
-        };
-*/
-
-        System.out.println("files in fenix (1):");
-        for (FileStorage fs : FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet()) {
-            for (GenericFile f : fs.getFileSet()) {
-                System.out.println(f.getDisplayName());
-            }
-        }
-
-
-
-        System.out.println(" ");
-        System.out.println("files in fenix: (2):");
-        System.out.println("files in fenix: " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(e -> e.getFileSet().stream().map(GenericFile::getDisplayName).collect(Collectors.joining(","))).collect(Collectors.joining("|")));
-        System.out.println(" ");
-
-
-
-        /*
-        try{
-            String st = FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage().store(gf, convert(file));
-            System.out.println("String store(GenericFile, File) returns: " + st);
-            System.out.println(" ");
-        }
-        catch (IOException e){
-            System.out.println(" io error exception :(");
-        }
-
-
-        String i = new String(FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage().read(gf));
-        System.out.println("byte[] read(GenericFile) returns: " + i);
-        System.out.println(" ");
-
-
-        System.out.println("getDownloadUrl(): " + FileDownloadServlet.getDownloadUrl(gf));
-        System.out.println(" ");
-*/
 
         return "ok";
     }
@@ -386,6 +318,8 @@ public class AplicacaoResource extends BennuRestResource {
         return jArray;
     }
 
+    //Uso PersistentGroup e não Group, pois ao usar Group dá o erro:
+    //"Failed to convert value of type 'java.lang.String' to required type 'org.fenixedu.bennu.core.groups.Group'; nested exception is java.lang.IllegalStateException: Cannot convert value of type 'java.lang.String' to required type 'org.fenixedu.bennu.core.groups.Group': no matching editors or conversion strategy found"
     @RequestMapping(value = "/isusergroupmember", method = RequestMethod.GET)
     public String isGroupMember(@RequestParam("user") User user,
                                 @RequestParam("group") PersistentGroup group) {
@@ -399,8 +333,8 @@ public class AplicacaoResource extends BennuRestResource {
 
     // CANAL (TEST)
 
-    //GET http://localhost:8080/notifcenter/apiaplicacoes/canal?email=email2&password=password2
-    @RequestMapping(value = "/canal", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    //POST http://localhost:8080/notifcenter/apiaplicacoes/canal?email=email2&password=password2
+    @RequestMapping(value = "/canal", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement canal(@RequestParam(value = "email") String email, @RequestParam(value = "password") String password) {
 
         Canal canal = Canal.createCanal(email, password);
@@ -408,7 +342,6 @@ public class AplicacaoResource extends BennuRestResource {
         return view(canal, CanalAdapter.class);
     }
 
-    //http://localhost:8080/notifcenter/apiaplicacoes/viewcanal/281818574094339
     @RequestMapping(value = "/viewcanal/{canal}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement viewCanal(@PathVariable(value = "canal") Canal canal) {
 
@@ -422,11 +355,13 @@ public class AplicacaoResource extends BennuRestResource {
 
     //TWILIO
 
-    @RequestMapping(value = "/twiliowhatsappsms", method = RequestMethod.GET)
+    @RequestMapping(value = "/twiliowhatsappsms", method = RequestMethod.POST)
     public ResponseEntity<String> twilioWhatsappSMS(@RequestParam(value = "message",
             defaultValue = "mensagem teste do notifcenter 1 =D") String message) {
 
-        TwilioWhatsapp twilioWhatsapp = TwilioWhatsapp.createTwilioWhatsappFromPropertiesFile("twiliowhatsapp1");
+        ///comentar depois de usar:
+        ///TwilioWhatsapp twilioWhatsapp = TwilioWhatsapp.createTwilioWhatsappFromPropertiesFile("twiliowhatsapp1");
+        TwilioWhatsapp twilioWhatsapp = FenixFramework.getDomainObject("281835753963522");
 
         ResponseEntity<String> responseEntity = twilioWhatsapp.sendMessage("whatsapp:+351961077271", message);
 
@@ -439,9 +374,6 @@ public class AplicacaoResource extends BennuRestResource {
 
     //ADICIONAR DADOS CONTACTO
 
-    //admin id: 281582350893057
-    //app id: 281736969715746
-    //canal whatsapp id: 281840048930837
     @SkipCSRF
     @RequestMapping(value = "/{app}/{user}/adddadoscontacto", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement addDadosContactoUtilizador(@PathVariable("app") Aplicacao app,
@@ -465,8 +397,7 @@ public class AplicacaoResource extends BennuRestResource {
 
     // ADICIONAR REMETENTE
 
-    //exemplo pedido POST: http://localhost:8080/notifcenter/apiaplicacoes/281736969715746/addremetente?name=pessoa2&access_token=
-    @SkipCSRF ///INDIFERENTE USAR ISTO SE USAR O MEU INTERCEPTOR
+    @SkipCSRF
     @RequestMapping(value = "/{app}/addremetente", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement addRemetente(@PathVariable("app") Aplicacao app, @RequestParam(value = "name") String nomeRemetente) {
 
@@ -581,7 +512,7 @@ public class AplicacaoResource extends BennuRestResource {
 
 
     @RequestMapping(value = "viewaplicacaoclientsync", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> viewAplicacaoClientSync(@RequestParam(value = "app", defaultValue = "281736969715746") Aplicacao app) {
+    public ResponseEntity<String> viewAplicacaoClientSync(@RequestParam(value = "app", defaultValue = "281736969715714") Aplicacao app) {
 
         String uri = "http://localhost:8080/notifcenter/apiaplicacoes/oauth/viewaplicacaodelayed/" + app.getExternalId() + "/?access_token=NTYz";
 
@@ -596,7 +527,7 @@ public class AplicacaoResource extends BennuRestResource {
 
 
     @RequestMapping(value = "viewaplicacaoclientasync", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement viewAplicacaoClientASync(@RequestParam(value = "app", defaultValue = "281736969715746") Aplicacao app) {
+    public JsonElement viewAplicacaoClientASync(@RequestParam(value = "app", defaultValue = "281736969715714") Aplicacao app) {
 
         String uri = "http://localhost:8080/notifcenter/apiaplicacoes/oauth/viewaplicacaodelayed/" + app.getExternalId() + "/?access_token=NTYz";
 
@@ -756,56 +687,11 @@ System.out.println(app.getRemetentesSet().stream().map(Remetente::getNome).colle
 ///System.out.println(resultSet.toString());
 
 
+    /*nao é necessario (usado para criar novos file storages:
+    String st = FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage().store(at, file.getInputStream());
+    System.out.println("String store(GenericFile, File) returns: " + st);
+    System.out.println(" ");
 
-        /*
-
-    //curl -F 'file=@/home/cr/imgg.png' http://localhost:8080/notifcenter/apiaplicacoes/upload
-    @SkipCSRF
-    @RequestMapping(value = "/upload", method = RequestMethod.POST)
-    public String uploadFile(@RequestParam(value = "file", required = false) MultipartFile file) {
-
-        //store file in system
-
-
-        GenericFile gf = new GenericFile() {
-            @Override
-            public boolean isAccessible(User user) {
-                return true;
-            }
-        };
-
-        System.out.println("fenix storages: " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(FileStorage::getName).collect(Collectors.joining(",")));
-        System.out.println(" ");
-
-        System.out.println("files in fenix (1):");
-        for (FileStorage fs : FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet()) {
-            for (GenericFile f : fs.getFileSet()) {
-                System.out.println(f.getDisplayName());
-            }
-        }
-        System.out.println(" ");
-        System.out.println("files in fenix: (2):");
-        System.out.println("files in fenix: " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(e -> e.getFileSet().stream().map(GenericFile::getDisplayName).collect(Collectors.joining(","))).collect(Collectors.joining("|")));
-        System.out.println(" ");
-
-        try{
-            String st = FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage().store(gf, convert(file));
-            System.out.println("String store(GenericFile, File) returns: " + st);
-            System.out.println(" ");
-        }
-        catch (IOException e){
-            System.out.println(" io error exception :(");
-        }
-
-        String i = new String(FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage().read(gf));
-        System.out.println("byte[] read(GenericFile) returns: " + i);
-        System.out.println(" ");
-
-        System.out.println("getDownloadUrl(): " + FileDownloadServlet.getDownloadUrl(gf));
-        System.out.println(" ");
-
-
-        return "ok";
-    }
-
-            */
+    String i = new String(FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage().read(at));
+    System.out.println("byte[] read(GenericFile) returns: " + i);
+    System.out.println(" ");*/
