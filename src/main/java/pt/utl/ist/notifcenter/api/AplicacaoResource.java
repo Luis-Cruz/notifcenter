@@ -1,5 +1,10 @@
 // Pedidos disponíveis:
 
+//ROBOT
+//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/pedidocanalnotificacao?canal=281835753963522&remetente=281724084813826
+//https://www.twilio.com/console/sms/whatsapp/learn
+//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/sendmessage?canalnotificacao=281775624421380&gdest=281702609977345&assunto=umassunto1&textocurto=aparecenowhatsppcurto&textolongo=algumtextolongo
+
 //DADOS EXEMPLO:
 //app "app_77": 281736969715714
 //remetente "rem1": 281724084813826
@@ -7,7 +12,7 @@
 //user "admin": 281582350893057
 //grupo "managers": 281702609977345
 //canal TwilioWhatsApp: 281835753963522
-//pedido de canal de notificacao: 281775624421378
+//pedido de canal de notificacao: 281775624421380
 
 //REGISTAR APP:
 //POST http://localhost:8080/notifcenter/apiaplicacoes/oauth/addaplicacao?name=app_77&redirect_uri=http://app77_site.com/code&description=descricao_app77
@@ -20,8 +25,9 @@
 //GET http://localhost:8080/notifcenter/apiaplicacoes/oauth/viewaplicacao/281736969715714?access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi/POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/addremetente?name=ric&access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
 //GET http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/listremetentes?access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
 //GET/POST http://localhost:8080/notifcenter/apiaplicacoes/notifcentercallback
-//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/pedidocanalnotificacao?canal=281835753963522&remetente=281724084813826
 //POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/281582350893057/adddadoscontacto?canal=281835753963522&data=dados1contacto@ex.com
+//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/pedidocanalnotificacao?canal=281835753963522&remetente=281724084813826
+//POST http://localhost:8080/notifcenter/apiaplicacoes/281736969715714/sendmessage?canalnotificacao=281775624421380&gdest=281702609977345&assunto=umassunto1&textocurto=aparecenowhatsppcurto&textolongo=algumtextolongo
 
 //UTEIS:
 //http://localhost:8080/notifcenter/apiaplicacoes/viewcanal/281835753963522
@@ -32,11 +38,24 @@
 //"no" http://localhost:8080/notifcenter/apiaplicacoes/isusergroupmember?user=281582350893059&group=281702609977345
 //"yes" http://localhost:8080/notifcenter/apiaplicacoes/isusergroupmember?user=281582350893057&group=281702609977345
 
+//CURL
+//curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"id":100}' http://localhost/api/postJsonReader.do
+//curl -H "Content-type: application/json" -X POST -d '{"id":101, "content":"ola1"}' http://localhost:8080/notifcenter/apiaplicacoes/greet
+//curl -H "Content-type: application/json" -X POST -d '{"email":"someemail@awd.com", "password":"pass1"}' http://localhost:8080/notifcenter/apiaplicacoes/canal1
+
+//curl -F 'file=@/home/cr/imgg.png' http://localhost:8080/notifcenter/apiaplicacoes/upload
+
+//curl -H "Content-type: application/x-www-form-urlencoded; charset=utf-8" -x POST -d "param1=value1&param2=value2" http://localhost:8080/notifcenter/apiaplicacoes/xyz
+
+
 package pt.utl.ist.notifcenter.api;
+
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.fenixedu.bennu.core.groups.Group;
 import org.fenixedu.bennu.core.rest.BennuRestResource;
@@ -52,9 +71,11 @@ import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.joda.time.DateTime;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.multipart.MultipartFile;
@@ -70,6 +91,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -147,63 +169,87 @@ public class AplicacaoResource extends BennuRestResource {
             return ErrorsAndWarnings.INVALID_REMETENTE_ERROR.toJson();
         }
 
+        ///TODO associar canais de notificacao todos ao sistemadenotifiacoes? (sim ou nao? por ccausa do pedidocriacaocanalnotificacao)
         CanalNotificacao pedidoCriacaoCanalNotificacao = CanalNotificacao.createPedidoCriacaoCanalNotificacao(canal, remetente);
 
         return view(pedidoCriacaoCanalNotificacao, CanalNotificacaoAdapter.class);
     }
 
     @SkipCSRF
-    @RequestMapping(value = "/{app}/{remetente}/sendmessage", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/{app}/sendmessage", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement sendMessage(@PathVariable("app") Aplicacao app,
-                                   @PathVariable("remetente") Remetente remetente,
-                                   @RequestParam("gdest[]") PersistentGroup[] gruposDestinatarios,
                                    @RequestParam("canalnotificacao") CanalNotificacao canalNotificacao,
+                                   @RequestParam("gdest") PersistentGroup[] gruposDestinatarios,
                                    @RequestParam("assunto") String assunto,
                                    @RequestParam("textocurto") String textoCurto,
                                    @RequestParam("textolongo") String textoLongo,
-                                   @RequestParam(value = "dataentrega", required = false) DateTime dataEntrega,
+                                   @RequestParam(value = "dataentrega", required = false) @DateTimeFormat(pattern="dd.MM.yyyy HH:mm:ss.SSSZ") DateTime dataEntrega,
                                    @RequestParam(value = "callbackurl", required = false) String callbackUrlEstadoEntrega,
-                                   //@RequestParam(value = "file[]", required = false) GenericFile[] anexos) {
-                                   @RequestParam(value = "file", required = false) MultipartFile anexo) {
-
-        //GenericFile ou MultipartFile?? ^^ multipart muito provavelmente
+                                   @RequestParam(value = "anexos", required = false) MultipartFile[] anexos) {
 
         if (!FenixFramework.isDomainObjectValid(app)) {
             return ErrorsAndWarnings.INVALID_APP_ERROR.toJson();
         }
 
-        if (!FenixFramework.isDomainObjectValid(remetente) || !app.getRemetentesSet().contains(remetente)) {
-            return ErrorsAndWarnings.INVALID_REMETENTE_ERROR.toJson();
+        if (!FenixFramework.isDomainObjectValid(canalNotificacao)) {
+            return ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR.toJsonWithDetails("canalNotificacao + '" + canalNotificacao.toString() + "' doesnt exist.");
+        }
+        else {
+            if (!app.getRemetentesSet().contains(canalNotificacao.getRemetente())) {
+                return ErrorsAndWarnings.NOTALLOWED_CANALNOTIFICACAO_ERROR.toJson();
+            }
         }
 
-
-        //store file in system
-
-        ///GenericFile gf =...
-
-        //FALTA RESTO (Primeiro perceber o genericfile
-
-        ///String st = FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage().store(gf, anexo);
-        ///System.out.println("to access file refer to: " + st);
-
-        ///System.out.println("getDownloadUrl(): "+ FileDownloadServlet.getDownloadUrl(gf));
-
-        return view(remetente, RemetenteAdapter.class);
-    }
-
-    public static File convert(MultipartFile file) throws IOException {
-        File convFile = new File(file.getOriginalFilename());
-        convFile.createNewFile();
-        try(InputStream is = file.getInputStream()) {
-            Files.copy(is, convFile.toPath());
+        for (PersistentGroup group : gruposDestinatarios) {
+            if (!FenixFramework.isDomainObjectValid(group)) {
+                return ErrorsAndWarnings.INVALID_GROUP_ERROR.toJsonWithDetails("Group + '" + group.toString() + "' doesnt exist.");
+            }
         }
-        return convFile;
+
+        if (textoCurto.length() > Integer.parseInt(NotifcenterSpringConfiguration.getConfiguration().notifcenterMensagemTextoCurtoMaxSize())) {
+            return ErrorsAndWarnings.INVALID_MESSAGE_ERROR.toJsonWithDetails("TextoCurto must be at most " +
+                    NotifcenterSpringConfiguration.getConfiguration().notifcenterMensagemTextoCurtoMaxSize() + " characters long.");
+        }
+
+        ArrayList<Attachment> attachments = null;
+
+        if (anexos != null) {
+            attachments = new ArrayList<>();
+
+            for (MultipartFile file: anexos) {
+                try {
+                    attachments.add(Attachment.createAttachment(file.getOriginalFilename(), "lowlevelname-" + canalNotificacao.getExternalId() + " " + file.getOriginalFilename(), file.getInputStream()));
+                    //System.out.println("anexo: " + FileDownloadServlet.getDownloadUrl(at));
+                } catch (IOException e) {
+                    //e.printStackTrace();
+                    return ErrorsAndWarnings.INVALID_MESSAGE_ERROR.toJsonWithDetails("Attachment \"" + file.getOriginalFilename() + "\" could not be loaded.");
+                }
+            }
+        }
+
+        Mensagem msg = Mensagem.createMensagem(canalNotificacao, gruposDestinatarios, assunto, textoCurto, textoLongo, dataEntrega, callbackUrlEstadoEntrega, attachments);
+        /*return*/
+        //System.out.println(view(msg, MensagemAdapter.class).toString());
+
+        //TwilioWhatsapp tw = FenixFramework.getDomainObject("281835753963522");
+        TwilioWhatsapp tw = (TwilioWhatsapp) msg.getCanalNotificacao().getCanal();
+
+        ResponseEntity<String> responseEntity = tw.sendMessage("whatsapp:+351961077271", msg.getTextoCurto());
+
+        if (responseEntity == null) {
+            return ErrorsAndWarnings.COULD_NOT_DELIVER_MESSAGE.toJsonWithDetails("Channel '" + msg.getCanalNotificacao().getCanal().getClass().getName() + "' is unavailable right now. Try again later.");
+            //return new ResponseEntity<String>("nope!", new HttpHeaders(), HttpStatus.NOT_FOUND);
+        }
+
+        //return responseEntity.getBody().toString();
+        return new JsonParser().parse(responseEntity.getBody());
     }
+
 
     //curl -F 'file=@/home/cr/imgg.png' http://localhost:8080/notifcenter/apiaplicacoes/upload
     @SkipCSRF
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
-    public String uploadFile(@RequestParam(value = "file") MultipartFile file) {
+    public String uploadFile(@RequestParam(value = "file", required = false) MultipartFile file) {
 
         ///System.out.println("fenix storages: " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(FileStorage::getName).collect(Collectors.joining(",")));
 
@@ -212,20 +258,21 @@ public class AplicacaoResource extends BennuRestResource {
         System.out.println(" ");
 
         Attachment at;
-        String toreturn = "ok\n";
+        String toreturn = "no file to save\n";
 
-        try{
-            at = Attachment.createAttachment(file.getOriginalFilename(), "lowlevelname-" + file.getOriginalFilename(), file.getInputStream());
+        if(file != null) {
+            try {
+                at = Attachment.createAttachment(file.getOriginalFilename(), "lowlevelname-" + file.getOriginalFilename(), file.getInputStream());
 
-            System.out.println("getOriginalFileName: " + file.getOriginalFilename());
+                System.out.println("getOriginalFileName: " + file.getOriginalFilename());
 
-            toreturn = FileDownloadServlet.getDownloadUrl(at) + "\n";
+                toreturn = FileDownloadServlet.getDownloadUrl(at) + "\n";
 
-            System.out.println("getDownloadUrl(): " + FileDownloadServlet.getDownloadUrl(at));
+                System.out.println("getDownloadUrl(): " + FileDownloadServlet.getDownloadUrl(at));
 
-        }
-        catch (IOException e){
-            e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         return toreturn;
@@ -583,11 +630,54 @@ public class AplicacaoResource extends BennuRestResource {
 
 
 
-    @RequestMapping("/greeting")
+    @RequestMapping("greeting")
     public Greeting greeting(@RequestParam(value = "name", defaultValue="oi!") String name) {
         ///return new Greeting(1234, name);
         return new Greeting();
     }
+
+
+    ////////////////////////////////////////////////
+
+    //FUNCIONA (Greeting não é um domain object)
+    @SkipCSRF
+    @RequestMapping(value = "greet", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Greeting greet(@RequestBody Greeting g) {
+        System.out.println(g.toString());
+        return g;
+    }
+
+    //NAO FUNCIONA (dá o erro: RuntimeException: Failed to invoke ... with no args)
+    @SkipCSRF
+    @RequestMapping(value = "canal1", method = RequestMethod.POST, /*consumes = MediaType.APPLICATION_JSON_VALUE,*/ produces = MediaType.APPLICATION_JSON_VALUE)
+    public Canal canal1(@RequestBody Canal c) {
+        return c;
+    }
+
+    //FUNCIONA
+    @SkipCSRF
+    @RequestMapping(value = "canal2", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement canal2(@RequestBody JsonElement c) {
+        return c;
+    }
+
+    //NAO FUNCIONA (não dá para retornar Canal (dá erro: "Bad object"))
+    @SkipCSRF
+    @RequestMapping(value = "canal3", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Canal canal3(@RequestBody JsonElement c) {
+        return create(c, Canal.class);
+    }
+
+    //FUNCIONA (POSSO USAR ESTE MODO EM ALTERNATIVA AOS @RequestParam's!!
+    //e.g. curl -H "Content-type: application/json" -X POST -d '{"email":"someemail@awd.com", "password":"pass1"}' http://localhost:8080/notifcenter/apiaplicacoes/canal4
+    @SkipCSRF
+    @RequestMapping(value = "canal4", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement canal4(@RequestBody JsonElement c) {
+        return view(create(c, Canal.class), CanalAdapter.class);
+    }
+
+    ////////////////////////////////////////////////
+
 
     @RequestMapping(value = "test1", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement test1() {
@@ -695,3 +785,23 @@ System.out.println(app.getRemetentesSet().stream().map(Remetente::getNome).colle
     String i = new String(FenixFramework.getDomainRoot().getBennu().getFileSupport().getDefaultStorage().read(at));
     System.out.println("byte[] read(GenericFile) returns: " + i);
     System.out.println(" ");*/
+
+
+    /*        try {
+            WrittenEvaluation eval = getDomainObject(oid, WrittenEvaluation.class);
+            if (!StringUtils.isBlank(enrol)) {
+                if (enrol.equalsIgnoreCase(ENROL)) {
+                    EnrolStudentInWrittenEvaluation.runEnrolStudentInWrittenEvaluation(getPerson().getUsername(),
+                            eval.getExternalId());
+                } else if (enrol.equalsIgnoreCase(UNENROL)) {
+                    UnEnrollStudentInWrittenEvaluation.runUnEnrollStudentInWrittenEvaluation(getPerson().getUsername(),
+                            eval.getExternalId());
+                }
+            }
+            return evaluations(response, request, context);
+
+        } catch (Exception e) {
+            throw newApplicationError(Status.PRECONDITION_FAILED, e.getMessage(), e.getMessage());
+        }
+    }
+    */
