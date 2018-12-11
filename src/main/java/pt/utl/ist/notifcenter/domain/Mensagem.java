@@ -3,12 +3,16 @@ package pt.utl.ist.notifcenter.domain;
 import org.apache.avro.reflect.Nullable;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
+import org.springframework.http.ResponseEntity;
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.DomainObject;
+import pt.ist.fenixframework.FenixFramework;
 
 import java.util.ArrayList;
 
 public class Mensagem extends Mensagem_Base {
-    
+
     public Mensagem() {
         super();
     }
@@ -27,8 +31,12 @@ public class Mensagem extends Mensagem_Base {
         mensagem.setTextoCurto(textoCurto);
         mensagem.setTextoLongo(textoLongo);
 
-        if (callbackUrlEstadoEntrega != null)
+        if (callbackUrlEstadoEntrega != null) {
             mensagem.setCallbackUrlEstadoEntrega(callbackUrlEstadoEntrega);
+        }
+        else {
+            mensagem.setCallbackUrlEstadoEntrega("none");
+        }
 
         if (attachments != null) {
             for (Attachment at : attachments) {
@@ -38,10 +46,49 @@ public class Mensagem extends Mensagem_Base {
 
         if (dataEntrega != null) {
             mensagem.setDataEntrega(dataEntrega);
-            //fazer algo
+            //TODO fazer algo para enviar mensagem no futuro
+        }
+        else {
+            mensagem.setDataEntrega(DateTime.now());
         }
 
         return mensagem;
     }
+
+    @Atomic
+    public void delete() {
+        this.getCanalNotificacao().removeMensagem(this);
+        this.setCanalNotificacao(null); ///
+
+        for (PersistentGroup g : this.getGruposDestinatariosSet()) {
+            g.removeMensagem(this);
+            this.removeGruposDestinatarios(g); ///
+        }
+
+        for (Attachment a : this.getAttachmentsSet()) {
+            a.delete();
+            //this.removeAttachments(a);
+        }
+
+        for (EstadoDeEntregaDeMensagemEnviadaAContacto e : this.getEstadoDeEntregaDeMensagemEnviadaAContactoSet()) {
+            e.delete();
+        }
+
+        this.deleteDomainObject();
+    }
+
+    /*
+    public String send() {
+
+
+        //TOD usar AsyncHTTP aqui.
+
+        InterfaceDeCanal tw = this.getCanalNotificacao().getCanal();
+
+        tw.sendMessage()
+
+        return "ok";
+    }
+    */
 
 }

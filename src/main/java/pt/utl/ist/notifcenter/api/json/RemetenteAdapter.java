@@ -3,11 +3,11 @@ package pt.utl.ist.notifcenter.api.json;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.fenixedu.bennu.core.annotation.DefaultJsonAdapter;
-import org.fenixedu.bennu.core.domain.exceptions.BennuCoreDomainException;
 import org.fenixedu.bennu.core.json.JsonAdapter;
 import org.fenixedu.bennu.core.json.JsonBuilder;
-import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.domain.Remetente;
+import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
+import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
 @DefaultJsonAdapter(Remetente.class)
 public class RemetenteAdapter implements JsonAdapter<Remetente> {
@@ -27,7 +27,7 @@ public class RemetenteAdapter implements JsonAdapter<Remetente> {
     public Remetente update(JsonElement jsonElement, Remetente remetente, JsonBuilder ctx) {
         final JsonObject jObj = jsonElement.getAsJsonObject();
         String nome = getRequiredValue(jObj, "name");
-        return remetente.updateRemetenteName(nome);
+        return remetente.update(nome);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class RemetenteAdapter implements JsonAdapter<Remetente> {
         if (obj.has(property)) {
             return obj.get(property).getAsString();
         }
-        throw BennuCoreDomainException.cannotCreateEntity();
+        throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Missing parameter " + property + "!");
     }
 
 }

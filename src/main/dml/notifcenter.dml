@@ -71,6 +71,7 @@ class Remetente {
 * dados.
 */
 class Mensagem{
+    String sid;
     String assunto;
     String textoCurto;
     String textoLongo;
@@ -136,7 +137,8 @@ class Canal {
         }
 
 
-class CanalNotificacao { /*o mesmo que "Configuracao Canal Remetente"*/    
+class CanalNotificacao { /*o mesmo que "Configuracao Canal Remetente"*/
+    boolean aguardandoAprovacao;
 }
 
 class Contacto {
@@ -148,6 +150,13 @@ class ExemploIdentidade {
     String param2;
 	Integer int1;
 }
+
+
+class EstadoDeEntregaDeMensagemEnviadaAContacto {
+    String idExterno;
+    String estadoEntrega;
+}
+
 
 
 /** Relations **/
@@ -173,10 +182,12 @@ relation SistemaNotificacoesTemCanais {
 }
 
 
+/*
 relation SistemaNotificacoesTemPedidosCriacaoCanalNotificacao {
     SistemaNotificacoes playsRole sistemaNotificacoes { multiplicity 1..1; }
     CanalNotificacao playsRole pedidosCriacaoCanalNotificacao { multiplicity 0..*; }
 }
+*/
 
 
 /* Sendo o CanalNotificacao uma relação trenária, então ele associa-se a um
@@ -219,7 +230,7 @@ relation MensagemEnviadaParaGrupos {
 
 /* Relação para evitar byteArrays na base de dados */
 relation MensagemAttachments {
-    Mensagem playsRole mensagem { multiplicity 0..*; }
+    Mensagem playsRole mensagem { multiplicity 1..1; }
     Attachment playsRole attachments { multiplicity *; }
 }
 
@@ -230,3 +241,33 @@ relation AttachmentGroup {
     .org.fenixedu.bennu.core.domain.groups.PersistentGroup playsRole group { multiplicity 1..*; }
 }
 */
+
+/*relation MensagemNaoEntregueAUtilizador {
+    Mensagem playsRole mensagem { multiplicity 1..1; }
+    .org.fenixedu.bennu.core.domain.User playsRole utilizadoresQueNaoReceberamMensagem { multiplicity 0..*; }
+}
+*/
+
+
+
+relation CanalTemEstadosDeEntregaDeMensagensEnviadasAContactos {
+    Canal playsRole canal { multiplicity 1..1; }
+    EstadoDeEntregaDeMensagemEnviadaAContacto playsRole estadoDeEntregaDeMensagemEnviadaAContacto { multiplicity 0..*; }
+}
+
+relation EstadoDeEntregaTemMensagem {
+    Mensagem playsRole mensagem { multiplicity 1..1; }
+    EstadoDeEntregaDeMensagemEnviadaAContacto playsRole estadoDeEntregaDeMensagemEnviadaAContacto { multiplicity 0..*; }
+}
+
+relation EstadoDeEntregaTemContacto {
+    Contacto playsRole contacto { multiplicity 1..1; }
+    EstadoDeEntregaDeMensagemEnviadaAContacto playsRole estadoDeEntregaDeMensagemEnviadaAContacto { multiplicity 0..*; }
+}
+
+
+
+
+
+
+
