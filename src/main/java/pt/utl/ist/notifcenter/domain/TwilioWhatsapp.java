@@ -67,7 +67,10 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
 
         body.put("To", Arrays.asList("initialized")); ///
         body.put("From", Arrays.asList(this.getFromPhoneNumber()));
-        body.put("Body", Arrays.asList(msg.getTextoCurto()));
+
+        String linkForMessage = " Check " + NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/notifcenter/" + this.getExternalId() + "/view";
+        String message = msg.getTextoCurto() + linkForMessage;
+        body.put("Body", Arrays.asList(message));
 
         for (PersistentGroup group : msg.getGruposDestinatariosSet()) {
             group.getMembers().forEach(user -> {
