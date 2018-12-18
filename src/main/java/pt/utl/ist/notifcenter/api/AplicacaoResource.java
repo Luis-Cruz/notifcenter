@@ -3,6 +3,12 @@
 //curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"param1":"value1"}'
 
 
+//OK4:
+//GET http://{{DOMAIN}}:8080/notifcenter/apicanais/listcanais
+//GET http://{{DOMAIN}}:8080/notifcenter/apicanais/listclassescanais
+//GET http://{{DOMAIN}}:8080/notifcenter/apicanais/281835753963522 (show canal)
+//POST {"name": "Messenger", "accountSID":"accountSID1", "authToken":"authToken1", "fromPhoneNumber":"fromPhoneNumber1", "uriaa":"uri2"} -> http://{{DOMAIN}}:8080/notifcenter/apicanais/addcanal
+
 
 //OK3:
 //POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/addaplicacao?name=app_99&redirect_uri=http://app99_site.com/code&description=descricao_app99
@@ -85,9 +91,8 @@
 //POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/sendmensagem?canalnotificacao=281775624421380&gdest=281702609977345&assunto=umassunto1&textocurto=aparecenowhatsppcurto&textolongo=algumtextolongo
 
 //UTEIS:
-//http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/viewcanal/281835753963522
-//http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/listcanais
-//http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/listutilizadores
+//http://{{DOMAIN}}:8080/notifcenter/apicanais/listcanais
+//http://{{DOMAIN}}:8080/notifcenter/apiutilizadores/listutilizadores
 //http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/listaplicacoes
 //http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/listgroups
 //http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/attachments/list
@@ -167,7 +172,6 @@ public class AplicacaoResource extends BennuRestResource {
        /{app}/update
        /{app}/delete
 
-
        /{app}/addremetente
        /{app}/listremetentes
        /{app}/{remetente}
@@ -177,7 +181,6 @@ public class AplicacaoResource extends BennuRestResource {
        /{app}/{remetente}/removegrupodestinario
        /{app}/{remetente}/listgruposdestinatarios
 
-
        /{app}/{remetente}/pedidocanalnotificacao
        /{app}/{remetente}/{canalnotificacao}/delete
        /{app}/{remetente}/listcanaisnotificacao
@@ -185,18 +188,15 @@ public class AplicacaoResource extends BennuRestResource {
        /{app}/sendmensagem
 
 
-      
-
        //API canal (/apicanais):
-       (falta)
-       /addanal
+       /addcanal
        /listcanais
+       /listclassescanais
        /{canal}
        /{canal}/update
-       // /{canal}/listCanaisNotificacao
-       // /{canal}/listContactos
-
-
+       /{canal}/delete
+       // /{canal}/listCanaisNotificacao //nao implementado. Usar /apiaplicacoes/{app}/{remetente}/listcanaisnotificacao
+       // /{canal}/listContactos //nao implementado. Usar /apiutilizadores/{utilizador}/listcontactos
 
 
        //API utilizador (/apiutilizadores):
@@ -251,6 +251,10 @@ public class AplicacaoResource extends BennuRestResource {
                                        @RequestParam(value = "redirect_uri", required = false) String redirectUrl,
                                        @RequestParam(value = "author", required = false) String authorName,
                                        @RequestParam(value = "site_url", required = false) String siteUrl) {
+
+        if (!FenixFramework.isDomainObjectValid(app)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
+        }
 
         return view(app.updateAplicacao(name, redirectUrl, description, authorName, siteUrl), AplicacaoAdapter.class);
     }
@@ -792,20 +796,7 @@ public class AplicacaoResource extends BennuRestResource {
         return jObj;
     }
 
-    @RequestMapping(value = "/listcanais", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement listCanais() {
-
-        JsonObject jObj = new JsonObject();
-        JsonArray jArray = new JsonArray();
-
-        for (Canal c: SistemaNotificacoes.getInstance().getCanaisSet()) {
-            jArray.add(view(c, CanalAdapter.class));
-        }
-
-        jObj.add("canais", jArray);
-        return jObj;
-    }
-
+    /*
     @RequestMapping(value = "/deletecanais", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public String deleteCanais() {
 
@@ -814,7 +805,7 @@ public class AplicacaoResource extends BennuRestResource {
         }
 
         return "All channels were deleted!";
-    }
+    }*/
 
     @RequestMapping(value = "/listgrupos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement listGrupos() {
@@ -993,16 +984,6 @@ public class AplicacaoResource extends BennuRestResource {
 
         return view(canal, CanalAdapter.class);
     }*/
-
-    @RequestMapping(value = "/viewcanal/{canal}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement viewCanal(@PathVariable(value = "canal") Canal canal) {
-
-        if (!FenixFramework.isDomainObjectValid(canal)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_ERROR);
-        }
-
-        return view(canal, CanalAdapter.class);
-    }
 
 
     /* IGNORAR - UpdateAppPermissions
@@ -1368,3 +1349,29 @@ System.out.println(app.getRemetentesSet().stream().map(Remetente::getNome).colle
         }
 
                 */
+
+           /*
+        Reflections reflections = new Reflections("pt.utl.ist.notifcenter");
+        Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(AnotacaoCanal.class);
+
+        annotated.forEach(e -> {
+            AnotacaoCanal annotation = e.getAnnotation(AnotacaoCanal.class);
+            String name = annotation.name();
+            String[] params = annotation.creatingParams();
+
+            System.out.println("name: " + name);
+            System.out.println("params: " + params);
+
+            JsonObject jO = new JsonObject();
+            JsonArray jA = new JsonArray();
+
+            for (String s : params) {
+                jA.add(s);
+            }
+
+            jO.addProperty("name", name);
+            jO.add("params", jA);
+
+            jArray.add(jO);
+        });
+        */

@@ -3,6 +3,7 @@ package pt.utl.ist.notifcenter.domain;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.apache.avro.reflect.Nullable;
 import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.springframework.http.HttpMethod;
@@ -17,6 +18,7 @@ import pt.utl.ist.notifcenter.utils.Utils;
 
 import java.util.*;
 
+@AnotacaoCanal(classFields = {"accountSID", "authToken", "fromPhoneNumber", "uri"})
 public class TwilioWhatsapp extends TwilioWhatsapp_Base {
 
     private TwilioWhatsapp() {
@@ -25,7 +27,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
     }
 
     @Atomic
-    public static TwilioWhatsapp createTwilioWhatsApp(final String accountSID, final String authToken, final String fromPhoneNumber, final String uri) {
+    public static TwilioWhatsapp createChannel(final String accountSID, final String authToken, final String fromPhoneNumber, final String uri) {
         TwilioWhatsapp twilioWhatsapp = new TwilioWhatsapp();
         twilioWhatsapp.setAccountSID(accountSID);
         twilioWhatsapp.setAuthToken(authToken);
@@ -33,9 +35,35 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         twilioWhatsapp.setUri(uri);
 
         //Debug
-        twilioWhatsapp.setEmail("twiliowhatsapp@notifcenter.com");
+        twilioWhatsapp.setEmail("twiliowhatsapp-" + twilioWhatsapp.getExternalId() + "@notifcenter.com");
 
         return twilioWhatsapp;
+    }
+
+    @Atomic
+    public TwilioWhatsapp updateChannel(@Nullable final String accountSID, @Nullable final String authToken, @Nullable final String fromPhoneNumber, @Nullable final String uri) {
+
+        if (isValidString(accountSID)) {
+            this.setAccountSID(accountSID);
+        }
+
+        if (isValidString(authToken)) {
+            this.setAuthToken(authToken);
+        }
+
+        if (isValidString(fromPhoneNumber)) {
+            this.setFromPhoneNumber(fromPhoneNumber);
+        }
+
+        if (isValidString(uri)) {
+            this.setUri(uri);
+        }
+
+        return this;
+    }
+
+    public boolean isValidString(@Nullable String str) {
+        return (str != null && !str.isEmpty());
     }
 
     public static TwilioWhatsapp createTwilioWhatsappFromPropertiesFile(final String file) {
@@ -47,7 +75,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
             return null;
         }
 
-        return createTwilioWhatsApp(propertiesMap.get("accountSID"), propertiesMap.get("authToken"), propertiesMap.get("fromPhoneNumber"), propertiesMap.get("uri"));
+        return createChannel/*TwilioWhatsApp*/(propertiesMap.get("accountSID"), propertiesMap.get("authToken"), propertiesMap.get("fromPhoneNumber"), propertiesMap.get("uri"));
     }
 
     /*
