@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import org.apache.avro.reflect.Nullable;
 import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
+import org.fenixedu.bennu.core.groups.Group;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -93,10 +94,10 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         header.add("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
         header.add("Authorization", HTTPClient.createBasicAuthString(this.getAccountSID(), this.getAuthToken()));
 
-        body.put("To", Arrays.asList("initialized")); ///
+        body.put("To", Arrays.asList("initializing...")); ///
         body.put("From", Arrays.asList(this.getFromPhoneNumber()));
 
-        String linkForMessage = " Check " + NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/notifcenter/" + this.getExternalId() + "/view";
+        String linkForMessage = " Check " + NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/notifcenter/" + msg.getExternalId() + "/view";
         String message = msg.getTextoCurto() + linkForMessage;
         body.put("Body", Arrays.asList(message));
 
@@ -111,23 +112,32 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
                 for (Contacto contacto : user.getContactosSet()) {
 
                     if (contacto.getCanal().getExternalId().equals(this.getExternalId())) {
-                        //responseEntities.add(tw.sendMessage(contacto.getDadosContacto(), msg.getTextoCurto()));
 
                         //Debug
                         System.out.println("has dadosContacto " + contacto.getDadosContacto());
 
-                        body.remove("To");
-                        body.put("To", Collections.singletonList(contacto.getDadosContacto()));
+                        //impedir que a mesma mensagem seja enviada duas vezes para o mesmo destinatário:
+                        if (contacto.getEstadoDeEntregaDeMensagemEnviadaAContactoSet().stream().anyMatch(e -> e.getMensagem().getExternalId().equals(msg.getExternalId()))) {
+                            System.out.println("DEBUG: Prevented duplicated message to user " + user.getUsername());
+                        }
+                        else {
+                            //responseEntities.add(tw.sendMessage(contacto.getDadosContacto(), msg.getTextoCurto()));
+                            body.remove("To");
+                            body.put("To", Collections.singletonList(contacto.getDadosContacto()));
 
-                        DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
-                        deferredResult.setResultHandler((Object responseEntity) -> {
+                            EstadoDeEntregaDeMensagemEnviadaAContacto edm = EstadoDeEntregaDeMensagemEnviadaAContacto.createEstadoDeEntregaDeMensagemEnviadaAContacto(this, msg, contacto, "none_yet", "none_yet");
 
-                            handleDeliveryStatus((ResponseEntity<String>) responseEntity, this, msg, contacto);
+                            DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
+                            deferredResult.setResultHandler((Object responseEntity) -> {
 
-                        });
+                                //handleDeliveryStatus((ResponseEntity<String>) responseEntity, this, msg, contacto);
+                                handleDeliveryStatus((ResponseEntity<String>) responseEntity, edm);
 
-                        //HTTPClient.restSyncClient(HttpMethod.POST, this.getUri(), header, body);
-                        HTTPClient.restASyncClient(HttpMethod.POST, this.getUri(), header, body, deferredResult);
+                            });
+
+                            //HTTPClient.restSyncClient(HttpMethod.POST, this.getUri(), header, body);
+                            HTTPClient.restASyncClient(HttpMethod.POST, this.getUri(), header, body, deferredResult);
+                        }
 
                         userHasNoContactForThisChannel = false;
 
@@ -137,13 +147,16 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
 
                 if (userHasNoContactForThisChannel) {
                     System.out.println("WARNING: user " + user.getUsername() + " has no contact for " + this.getClass().getSimpleName());
+
+                    //TODO: EstadoDeEntregaDeMensagemEnviadaAContacto -> EstadoDeEntregaDeMensagemEnviadaAUtilizador
+                    //EstadoDeEntregaDeMensagemEnviadaAContacto.createEstadoDeEntregaDeMensagemEnviadaAContacto(this, msg, contacto, "none", "failed:no_channel_contact_data");
                 }
 
             });
         }
     }
 
-    static void handleDeliveryStatus(ResponseEntity<String> responseEntity, Canal canal, Mensagem msg, Contacto contacto) {
+    static void handleDeliveryStatus(ResponseEntity<String> responseEntity, EstadoDeEntregaDeMensagemEnviadaAContacto edm) {
 
         //Debug
         HTTPClient.printResponseEntity(responseEntity);
@@ -152,13 +165,14 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         String idExterno = getRequiredValue(jObj.getAsJsonObject(), "sid");
         String estadoEntrega = getRequiredValue(jObj.getAsJsonObject(), "status");
 
-        EstadoDeEntregaDeMensagemEnviadaAContacto.createEstadoDeEntregaDeMensagemEnviadaAContacto(canal, msg, contacto, idExterno, estadoEntrega);
+        //EstadoDeEntregaDeMensagemEnviadaAContacto.createEstadoDeEntregaDeMensagemEnviadaAContacto(canal, msg, contacto, idExterno, estadoEntrega);
+        edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
 
         if (responseEntity.getStatusCode() != HttpStatus.OK || responseEntity.getStatusCode() != HttpStatus.CREATED || idExterno == null || estadoEntrega == null) {
-            System.out.println("Failed to send message to " + contacto.getUtilizador().getUsername() + "! sid is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+            System.out.println("Failed to send message to " + edm.getContacto().getUtilizador().getUsername() + "! sid is: " + idExterno + ", and delivery status is: " + estadoEntrega);
         }
         else {
-            System.out.println("Success on sending message to " + contacto.getUtilizador().getUsername() + "! sid is: " + idExterno + ", and delivery status is: " + estadoEntrega);
+            System.out.println("Success on sending message to " + edm.getContacto().getUtilizador().getUsername() + "! sid is: " + idExterno + ", and delivery status is: " + estadoEntrega);
         }
     }
 

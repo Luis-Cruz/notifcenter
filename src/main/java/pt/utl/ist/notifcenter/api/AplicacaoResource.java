@@ -158,7 +158,8 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/apiaplicacoes")
 @SpringFunctionality(app = NotifcenterController.class, title = "title.Notifcenter.api.aplicacoes")
-public class AplicacaoResource extends BennuRestResource {
+public class
+AplicacaoResource extends BennuRestResource {
 
     /*
     Numa API REST, neste caso o resource é aplicação, e queremos adicionar
@@ -637,6 +638,26 @@ public class AplicacaoResource extends BennuRestResource {
         for (EstadoDeEntregaDeMensagemEnviadaAContacto e : canal.getEstadoDeEntregaDeMensagemEnviadaAContactoSet()) {
             if (e.getIdExterno().equals(idExterno)) {
                 e.changeEstadoEntrega(estadoEntrega);
+
+                //If there is a message callback, then send message status to the app
+                if (!e.getMensagem().getCallbackUrlEstadoEntrega().equals("none")) {
+
+                    MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
+                    MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+
+                    header.add("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
+                    body.put("MessageId", Collections.singletonList(e.getMensagem().getExternalId()));
+                    body.put("User", Collections.singletonList(e.getContacto().getUtilizador().getUsername())); ///?
+                    body.put("MessageStatus", Collections.singletonList(estadoEntrega));
+
+                    DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
+                    deferredResult.setResultHandler((Object responseEntity) -> {
+                        HTTPClient.printResponseEntity((ResponseEntity<String>) responseEntity); /// anything else to do?
+                    });
+
+                    HTTPClient.restASyncClient(HttpMethod.POST, e.getMensagem().getCallbackUrlEstadoEntrega(), header, body, deferredResult);
+                }
+
                 throw new NotifcenterException(ErrorsAndWarnings.SUCCESS_THANKS);
             }
         }
@@ -647,6 +668,22 @@ public class AplicacaoResource extends BennuRestResource {
     private String getRequiredValue(JsonObject obj, String property) {
         if (obj.has(property)) {
             return obj.get(property).getAsString();
+        }
+        throw new NotifcenterException(ErrorsAndWarnings.MISSING_PARAMETER_ERROR, "Missing parameter " + property + "!");
+    }
+
+    private String[] getRequiredArrayValue(JsonObject obj, String property) {
+        if (obj.has(property)) {
+            //Gson googleJson = new Gson();
+            //ArrayList<String> arrayList = googleJson.fromJson(obj.get(property).getAsJsonArray(), ArrayList.class);
+            ArrayList<String> arrayList = new ArrayList<>();
+            Iterator<JsonElement> i = obj.get(property).getAsJsonArray().iterator();
+
+            while (i.hasNext()) {
+                arrayList.add(i.next().getAsString());
+            }
+
+            return arrayList.toArray(new String[0]);
         }
         throw new NotifcenterException(ErrorsAndWarnings.MISSING_PARAMETER_ERROR, "Missing parameter " + property + "!");
     }
@@ -692,6 +729,75 @@ public class AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
         }
 
+        //create and send message
+        Mensagem msg = verifyParamsAndCreateAMessage(app, canalNotificacao, gruposDestinatarios, assunto, textoCurto, textoLongo, dataEntrega, callbackUrlEstadoEntrega, anexos);
+        Canal ic = msg.getCanalNotificacao().getCanal();
+        ic.sendMessage(msg);
+
+        return view(msg, MensagemAdapter.class);
+    }
+
+    @SkipCSRF
+    @RequestMapping(value = "/{app}/sendmensagem2", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement sendMensagem2(@PathVariable("app") Aplicacao app,
+                                    @RequestBody JsonElement jsonElement,
+                                    @RequestParam(value = "anexos", required = false) MultipartFile[] anexos) {
+
+        if (!FenixFramework.isDomainObjectValid(app)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
+        }
+
+        //extract message params from JsonElement:
+        String cn = getRequiredValue(jsonElement.getAsJsonObject(), "canalnotificacao");
+        CanalNotificacao canalNotificacao;
+        try {
+            canalNotificacao = FenixFramework.getDomainObject(cn);
+        }
+        catch (Exception e) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR);
+        }
+
+        String[] gd = getRequiredArrayValue(jsonElement.getAsJsonObject(), "gdest");
+
+        ArrayList<PersistentGroup> al = new ArrayList<>();
+        String ss = "groupId";
+        try {
+            for (String s : gd) {
+                ss = s;
+                al.add(FenixFramework.getDomainObject(s));
+            }
+        }
+        catch (Exception e) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_GROUP_ERROR, "Group " + ss + " doesnt exist.");
+        }
+        PersistentGroup[] gruposDestinatarios = al.toArray(new PersistentGroup[0]);
+
+        String assunto = getRequiredValue(jsonElement.getAsJsonObject(), "assunto");
+        String textoCurto = getRequiredValue(jsonElement.getAsJsonObject(), "textocurto");
+        String textoLongo = getRequiredValue(jsonElement.getAsJsonObject(), "textolongo");
+
+        String de = tryTogetRequiredValue(jsonElement.getAsJsonObject(), "dataentrega");
+        DateTime dataEntrega;
+        try {
+            dataEntrega = DateTime.parse(de, org.joda.time.format.DateTimeFormat.forPattern("dd.MM.yyyy HH:mm:ss.SSS"));
+        }
+        catch (Exception e) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_DELIVERY_DATETIME_ERROR);
+        }
+
+        String callbackUrlEstadoEntrega = tryTogetRequiredValue(jsonElement.getAsJsonObject(), "callbackurl");
+
+        //create and send message
+        Mensagem msg = verifyParamsAndCreateAMessage(app, canalNotificacao, gruposDestinatarios, assunto, textoCurto, textoLongo, dataEntrega, callbackUrlEstadoEntrega, anexos);
+        Canal ic = msg.getCanalNotificacao().getCanal();
+        ic.sendMessage(msg);
+
+        return view(msg, MensagemAdapter.class);
+    }
+
+
+    private Mensagem verifyParamsAndCreateAMessage(Aplicacao app, CanalNotificacao canalNotificacao, PersistentGroup[] gruposDestinatarios, String assunto, String textoCurto, String textoLongo, DateTime dataEntrega, String callbackUrlEstadoEntrega, MultipartFile[] anexos) {
+
         if (!FenixFramework.isDomainObjectValid(canalNotificacao) || !app.getRemetentesSet().contains(canalNotificacao.getRemetente())) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR, "Such canalnotificacao doesnt exist.");
         }
@@ -731,16 +837,15 @@ public class AplicacaoResource extends BennuRestResource {
         }
 
         Mensagem msg = Mensagem.createMensagem(canalNotificacao, gruposDestinatarios, assunto, textoCurto, textoLongo, dataEntrega, callbackUrlEstadoEntrega, attachments);
-
-        //https://howtodoinjava.com/spring-boot2/enableasync-async-controller/
-        //new Thread(() -> {
-        Canal ic = msg.getCanalNotificacao().getCanal();
-        ic.sendMessage(msg);
-        //}).start();
-
-        return view(msg, MensagemAdapter.class);
+        return msg;
     }
 
+    private String tryTogetRequiredValue(JsonObject obj, String property) {
+        if (obj.has(property)) {
+            return obj.get(property).getAsString();
+        }
+        return null;
+    }
 
     @RequestMapping(value = "/attachments/{fileName}", method = RequestMethod.GET)
     public HttpEntity<byte[]> downloadAttachment(@PathVariable("fileName") GenericFile genericFile) {
