@@ -6,7 +6,6 @@ import com.google.gson.JsonParser;
 import org.apache.avro.reflect.Nullable;
 import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
-import org.fenixedu.bennu.core.groups.Group;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -118,7 +117,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
 
                         //impedir que a mesma mensagem seja enviada duas vezes para o mesmo destinatário:
                         if (contacto.getEstadoDeEntregaDeMensagemEnviadaAContactoSet().stream().anyMatch(e -> e.getMensagem().getExternalId().equals(msg.getExternalId()))) {
-                            System.out.println("DEBUG: Prevented duplicated message to user " + user.getUsername());
+                            System.out.println("DEBUG: Prevented duplicated message for user " + user.getUsername());
                         }
                         else {
                             //responseEntities.add(tw.sendMessage(contacto.getDadosContacto(), msg.getTextoCurto()));

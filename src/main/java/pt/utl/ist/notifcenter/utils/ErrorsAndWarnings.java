@@ -6,7 +6,8 @@ import org.springframework.http.HttpStatus;
 
 public enum ErrorsAndWarnings {
 
-    INVALID_DELIVERY_DATETIME_ERROR ("invalidDatetime", "Invalid delivery datetime.", HttpStatus.PRECONDITION_FAILED),
+    INVALID_JSON_ERROR ("invalidJson", "Invalid JSON data.", HttpStatus.PRECONDITION_FAILED),
+    INVALID_DATETIME_ERROR ("invalidDatetime", "Invalid datetime. Valid pattern is dd.MM.yyyy HH:mm:ss.SSS", HttpStatus.PRECONDITION_FAILED),
     INTERNAL_SERVER_ERROR ("internalServerError", "Internal server error.", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_APP_ERROR ("invalidApp", "Invalid application ID.", HttpStatus.PRECONDITION_FAILED),
     INVALID_APPNAME_ERROR ("applicationNameAlreadyInUse", "Such application name cannot be used.", HttpStatus.PRECONDITION_FAILED),

@@ -118,6 +118,7 @@ package pt.utl.ist.notifcenter.api;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.fenixedu.bennu.core.rest.BennuRestResource;
@@ -139,6 +140,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.multipart.MultipartFile;
+import pt.ist.fenixframework.DomainObject;
 import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.api.json.*;
 
@@ -714,7 +716,7 @@ AplicacaoResource extends BennuRestResource {
     }
 
     @SkipCSRF
-    @RequestMapping(value = "/{app}/sendmensagem", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/{app}/sendmensagem", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement sendMensagem(@PathVariable("app") Aplicacao app,
                                    @RequestParam("canalnotificacao") CanalNotificacao canalNotificacao,
                                    @RequestParam("gdest") PersistentGroup[] gruposDestinatarios,
@@ -738,10 +740,20 @@ AplicacaoResource extends BennuRestResource {
     }
 
     @SkipCSRF
-    @RequestMapping(value = "/{app}/sendmensagem2", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/{app}/sendmensagem2", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement sendMensagem2(@PathVariable("app") Aplicacao app,
-                                    @RequestBody JsonElement jsonElement,
-                                    @RequestParam(value = "anexos", required = false) MultipartFile[] anexos) {
+                                     @RequestPart(value = "json", required = true) String message_json,
+                                     @RequestPart(value = "anexos", required = false) MultipartFile[] anexos) {
+
+        //try to get JSON data:
+        JsonElement jsonElement;
+        try {
+            JsonParser parser = new JsonParser();
+            jsonElement = parser.parse(message_json);
+        }
+        catch (Exception e) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_JSON_ERROR, "Bad parameter json: " + message_json);
+        }
 
         if (!FenixFramework.isDomainObjectValid(app)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
@@ -749,52 +761,27 @@ AplicacaoResource extends BennuRestResource {
 
         //extract message params from JsonElement:
         String cn = getRequiredValue(jsonElement.getAsJsonObject(), "canalnotificacao");
-        CanalNotificacao canalNotificacao;
-        try {
-            canalNotificacao = FenixFramework.getDomainObject(cn);
-        }
-        catch (Exception e) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR);
-        }
+        CanalNotificacao canalNotificacao = getDomainObject(CanalNotificacao.class, cn);
 
         String[] gd = getRequiredArrayValue(jsonElement.getAsJsonObject(), "gdest");
-
-        ArrayList<PersistentGroup> al = new ArrayList<>();
-        String ss = "groupId";
-        try {
-            for (String s : gd) {
-                ss = s;
-                al.add(FenixFramework.getDomainObject(s));
-            }
-        }
-        catch (Exception e) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_GROUP_ERROR, "Group " + ss + " doesnt exist.");
-        }
-        PersistentGroup[] gruposDestinatarios = al.toArray(new PersistentGroup[0]);
+        PersistentGroup[] gruposDestinatarios = getDomainObjectsArray(PersistentGroup.class, gd).toArray(new PersistentGroup[0]);
 
         String assunto = getRequiredValue(jsonElement.getAsJsonObject(), "assunto");
         String textoCurto = getRequiredValue(jsonElement.getAsJsonObject(), "textocurto");
         String textoLongo = getRequiredValue(jsonElement.getAsJsonObject(), "textolongo");
 
         String de = tryTogetRequiredValue(jsonElement.getAsJsonObject(), "dataentrega");
-        DateTime dataEntrega;
-        try {
-            dataEntrega = DateTime.parse(de, org.joda.time.format.DateTimeFormat.forPattern("dd.MM.yyyy HH:mm:ss.SSS"));
-        }
-        catch (Exception e) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_DELIVERY_DATETIME_ERROR);
-        }
+        DateTime dataEntrega = getDatetime(de);
 
         String callbackUrlEstadoEntrega = tryTogetRequiredValue(jsonElement.getAsJsonObject(), "callbackurl");
 
-        //create and send message
+        //try to create and send message
         Mensagem msg = verifyParamsAndCreateAMessage(app, canalNotificacao, gruposDestinatarios, assunto, textoCurto, textoLongo, dataEntrega, callbackUrlEstadoEntrega, anexos);
         Canal ic = msg.getCanalNotificacao().getCanal();
         ic.sendMessage(msg);
 
         return view(msg, MensagemAdapter.class);
     }
-
 
     private Mensagem verifyParamsAndCreateAMessage(Aplicacao app, CanalNotificacao canalNotificacao, PersistentGroup[] gruposDestinatarios, String assunto, String textoCurto, String textoLongo, DateTime dataEntrega, String callbackUrlEstadoEntrega, MultipartFile[] anexos) {
 
@@ -820,24 +807,92 @@ AplicacaoResource extends BennuRestResource {
                     NotifcenterSpringConfiguration.getConfiguration().notifcenterMensagemTextoCurtoMaxSize() + " characters long.");
         }
 
-        ArrayList<Attachment> attachments = null;
+        //Tenho de criar a mensagem antes de criar os attachments
+        Mensagem msg = Mensagem.createMensagem(canalNotificacao, gruposDestinatarios, assunto, textoCurto, textoLongo, dataEntrega, callbackUrlEstadoEntrega);
+
+        ///ArrayList<Attachment> attachments = null;
 
         if (anexos != null) {
-            attachments = new ArrayList<>();
+            ///attachments = new ArrayList<>();
 
             for (MultipartFile file: anexos) {
                 try {
-                    attachments.add(Attachment.createAttachment(file.getOriginalFilename(), "lowlevelname-" + canalNotificacao.getExternalId() + " " + file.getOriginalFilename(), file.getInputStream()));
+                    Attachment at =  Attachment.createAttachment(msg, file.getOriginalFilename(), "lowlevelname-" + canalNotificacao.getExternalId() + " " + file.getOriginalFilename(), file.getInputStream());
+                    ///attachments.add(at);
                     //System.out.println("anexo: " + FileDownloadServlet.getDownloadUrl(at));
-                } catch (IOException e) {
-                    //e.printStackTrace();
+                    //debug:
+                    System.out.println(view(at, AttachmentAdapter.class).toString());
+                }
+                catch (IOException e) {
+                    e.printStackTrace(); ///debug - depois comentar isto
+                    msg.delete(); ///apagar mensagem criada em caso de falha num anexo
                     throw new NotifcenterException(ErrorsAndWarnings.INVALID_MESSAGE_ERROR, "Attachment " + file.getOriginalFilename() + " could not be loaded.");
                 }
             }
         }
 
-        Mensagem msg = Mensagem.createMensagem(canalNotificacao, gruposDestinatarios, assunto, textoCurto, textoLongo, dataEntrega, callbackUrlEstadoEntrega, attachments);
+        ///Mensagem msg = Mensagem.createMensagem(canalNotificacao, gruposDestinatarios, assunto, textoCurto, textoLongo, dataEntrega, callbackUrlEstadoEntrega, attachments);
+
         return msg;
+    }
+
+    private <T> T getDomainObject(Class<T> clazz, String id) {
+        try {
+            DomainObject dObj = FenixFramework.getDomainObject(id);
+            T t = (T) dObj;
+            return t;
+        }
+        catch (Exception e) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Invalid parameter " + clazz.getSimpleName() + " id " + id + " !");
+        }
+    }
+
+    /*
+    private <T> List<T> getDomainObjectsArray(Class<T> clazz, String[] id) {
+        int i = 0;
+
+        try {
+            ArrayList<T> al = new ArrayList<>();
+
+            for(i = 0; i < id.length; i++) {
+                DomainObject dObj = FenixFramework.getDomainObject(id[i]);
+                T t = (T) dObj;
+                al.add(t);
+            }
+
+            return al;
+        }
+        catch (Exception e) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Invalid parameter " + clazz.getSimpleName() + " id " + id[i] + " !");
+        }
+    }
+    */
+
+    private <T> List<T> getDomainObjectsArray(Class<T> clazz, String[] id) {
+        ArrayList<T> al = new ArrayList<>();
+
+        for (String i : id) {
+            try {
+                DomainObject dObj = FenixFramework.getDomainObject(i);
+                T t = (T) dObj;
+                al.add(t);
+            }
+            catch (Exception e) {
+                throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Invalid parameter " + clazz.getSimpleName() + " id " + i + " !");
+            }
+        }
+
+        return al;
+    }
+
+    private DateTime getDatetime(String dt) {
+        try {
+            DateTime date = DateTime.parse(dt, org.joda.time.format.DateTimeFormat.forPattern("dd.MM.yyyy HH:mm:ss.SSS"));
+            return date;
+        }
+        catch (Exception e) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_DATETIME_ERROR, "Invalid datetime " + dt + " !");
+        }
     }
 
     private String tryTogetRequiredValue(JsonObject obj, String property) {
@@ -966,7 +1021,12 @@ AplicacaoResource extends BennuRestResource {
 
     @SkipCSRF
     @RequestMapping(value = "/deletemensagens", method = RequestMethod.POST)
-    public String deleteMnsagens(@RequestParam(value = "msg", required = false) Mensagem msg) {
+    public String deleteMnsagens(@RequestParam(value = "msg"/*, required = false FOR SAFETY*/) Mensagem msg) {
+
+        //FOR SAFETY
+        if (!FenixFramework.isDomainObjectValid(msg)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_MESSAGE_ERROR);
+        }
 
         boolean flag = false;
 
@@ -1006,8 +1066,8 @@ AplicacaoResource extends BennuRestResource {
     //Upload attachment (TEST)
 
     @SkipCSRF
-    @RequestMapping(value = "/upload", method = RequestMethod.POST)
-    public String uploadFile(@RequestParam(value = "file", required = false) MultipartFile file) {
+    @RequestMapping(value = "/upload/{msg}", method = RequestMethod.POST)
+    public String uploadFile(@PathVariable("msg") Mensagem msg, @RequestParam(value = "file", required = false) MultipartFile[] files) {
 
         ///System.out.println("fenix storages: " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(FileStorage::getName).collect(Collectors.joining(",")));
 
@@ -1018,21 +1078,24 @@ AplicacaoResource extends BennuRestResource {
         Attachment at;
         String toReturn = "no file to save\n";
 
-        if(file != null) {
-            try {
-                at = Attachment.createAttachment(file.getOriginalFilename(), "lowlevelname-" + file.getOriginalFilename(), file.getInputStream());
+        for (MultipartFile file : files) {
 
-                System.out.println("getOriginalFileName: " + file.getOriginalFilename());
-                System.out.println("externalId: " + at.getExternalId());
+            if (file != null) {
+                try {
+                    at = Attachment.createAttachment(msg, file.getOriginalFilename(), "lowlevelname-" + file.getOriginalFilename(), file.getInputStream());
 
-                //toreturn = FileDownloadServlet.getDownloadUrl(at) + "\n";
-                toReturn = NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/apiaplicacoes/attachments/" + at.getExternalId() + "\n";
+                    System.out.println("getOriginalFileName: " + file.getOriginalFilename());
+                    System.out.println("externalId: " + at.getExternalId());
 
-                System.out.println("getDownloadUrl(): " + FileDownloadServlet.getDownloadUrl(at));
-                System.out.println("file url: " + NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/apiaplicacoes/attachments/" + at.getExternalId());
+                    //toreturn = FileDownloadServlet.getDownloadUrl(at) + "\n";
+                    toReturn = toReturn + "\n" + NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/apiaplicacoes/attachments/" + at.getExternalId() + "\n";
 
-            } catch (IOException e) {
-                e.printStackTrace();
+                    System.out.println("getDownloadUrl(): " + FileDownloadServlet.getDownloadUrl(at));
+                    System.out.println("file url: " + NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/apiaplicacoes/attachments/" + at.getExternalId());
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -1041,8 +1104,8 @@ AplicacaoResource extends BennuRestResource {
 
     //SAVE FILE FROM OWN COMPUTER(TEST)
     @SkipCSRF
-    @RequestMapping(value = "/uploadcomfiletxt", method = RequestMethod.POST)
-    public String uploadFileTXT(@RequestParam(value = "filename", defaultValue = "/home/cr/file.txt") String filename) {
+    @RequestMapping(value = "/uploadcomfiletxt/{msg}", method = RequestMethod.POST)
+    public String uploadFileTXT(@PathVariable("msg") Mensagem msg, @RequestParam(value = "filename", defaultValue = "/home/cr/file.txt") String filename) {
 
         System.out.println(" ");
         System.out.println("files in fenix (2): " + FenixFramework.getDomainRoot().getBennu().getFileSupport().getFileStorageSet().stream().map(e -> e.getFileSet().stream().map(GenericFile::getDisplayName).collect(Collectors.joining(","))).collect(Collectors.joining("|")));
@@ -1057,7 +1120,7 @@ AplicacaoResource extends BennuRestResource {
 
             System.out.println("getAbsolutePath: " + file.getAbsolutePath());
 
-            at = Attachment.createAttachment("prettyname2", "lowlevelname2", file);
+            at = Attachment.createAttachment(msg, "prettyname2", "lowlevelname2", file);
         }
         catch (IOException e){
             e.printStackTrace();
