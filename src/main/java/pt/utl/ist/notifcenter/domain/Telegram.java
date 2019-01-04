@@ -1,6 +1,6 @@
 package pt.utl.ist.notifcenter.domain;
 
-@AnotacaoCanal(classFields = {"id", "authToken"})
+@AnotacaoCanal(classFields = {"id", "numeroTelemovel", "tokenAutorizacao"})
 public class Telegram extends Telegram_Base {
     
     public Telegram() {
@@ -11,5 +11,6 @@ public class Telegram extends Telegram_Base {
     public void sendMessage(Mensagem msg) {
 
     }
+
 
 }

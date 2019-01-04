@@ -3,6 +3,8 @@ package pt.utl.ist.notifcenter.domain;
 //import org.springframework.http.ResponseEntity;
 import pt.ist.fenixframework.Atomic;
 
+import java.util.HashMap;
+
 public abstract class Canal extends Canal_Base {
 
     public Canal() {
@@ -18,12 +20,6 @@ public abstract class Canal extends Canal_Base {
         canal.setEmail(email);
         canal.setPassword(password);
         return canal;
-    }
-    */
-
-    /*
-    public ResponseEntity<String> sendMessage(final String to, final String message) {
-        return null;
     }
     */
 

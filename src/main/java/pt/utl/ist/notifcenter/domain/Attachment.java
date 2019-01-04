@@ -1,12 +1,13 @@
 package pt.utl.ist.notifcenter.domain;
 
 import org.fenixedu.bennu.core.domain.User;
+import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import pt.ist.fenixframework.Atomic;
-import pt.ist.fenixframework.FenixFramework;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 
 public class Attachment extends Attachment_Base {
 
@@ -17,7 +18,19 @@ public class Attachment extends Attachment_Base {
 
     @Override
     public boolean isAccessible(User user) {
-        return true;
+        for (PersistentGroup pg : this.getMensagem().getGruposDestinatariosSet()) {
+            if (pg.isMember(user)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isAccessibleByApp(Aplicacao app) {
+        if (this.getMensagem().getCanalNotificacao().getRemetente().getAplicacao().equals(app)) {
+            return true;
+        }
+        return false;
     }
 
     @Atomic
@@ -46,6 +59,13 @@ public class Attachment extends Attachment_Base {
         this.setMensagem(null);
 
         //TODO how to delete file from filesystem ???
+        ///Files.deleteIfExists("awd");
+        /*
+        final File existingFile = new File(getFilePath());
+        if (!existingFile.exists() || existingFile.delete()) {
+            setFileSupport(null);
+            deleteDomainObject();
+        }*/
 
         this.setStorage(null);
         this.setFileSupport(null);

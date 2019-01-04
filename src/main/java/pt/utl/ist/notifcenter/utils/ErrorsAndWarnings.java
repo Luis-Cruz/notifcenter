@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 
 public enum ErrorsAndWarnings {
 
+    NOTALLOWED_VIEW_PAGE_ERROR ("notAllowedPage", "No permissions to view this page.", HttpStatus.FORBIDDEN),
     INVALID_JSON_ERROR ("invalidJson", "Invalid JSON data.", HttpStatus.PRECONDITION_FAILED),
     INVALID_DATETIME_ERROR ("invalidDatetime", "Invalid datetime. Valid pattern is dd.MM.yyyy HH:mm:ss.SSS", HttpStatus.PRECONDITION_FAILED),
     INTERNAL_SERVER_ERROR ("internalServerError", "Internal server error.", HttpStatus.INTERNAL_SERVER_ERROR),
@@ -22,15 +23,17 @@ public enum ErrorsAndWarnings {
     INVALID_MESSAGE_ERROR ("invalidMessage", "Invalid message.", HttpStatus.PRECONDITION_FAILED),
     NOTALLOWED_CANALNOTIFICACAO_ERROR ("notAllowedCanalNotificacao", "No permissions to use such notification channel.", HttpStatus.FORBIDDEN),
     NOTALLOWED_GROUP_ERROR ("notAllowedGroup", "No permissions to send messages to group.", HttpStatus.FORBIDDEN),
+    NOTALLOWED_TO_ADD_GROUP_ERROR ("notAllowedToAddGroup", "No permissions to add message receiving groups.", HttpStatus.FORBIDDEN),
     COULD_NOT_DELIVER_MESSAGE ("couldNotDeliverMessage", "Could not deliver message.", HttpStatus.REQUEST_TIMEOUT),
     INVALID_ATTACHMENT_ERROR ("attachmentNotFound", "No such attachment was found.", HttpStatus.NOT_FOUND),
     INVALID_ENTITY_ERROR ("cannotCreateEntity", "Invalid entity parameters.", HttpStatus.PRECONDITION_FAILED),
-    NOTALLOWED_VIEWMESSAGE_ERROR ("notAllowedToViewMessage", "No permissions to view such message.", HttpStatus.FORBIDDEN),
+    NOTALLOWED_VIEW_MESSAGE_ERROR ("notAllowedToViewMessage", "No permissions to view such message.", HttpStatus.FORBIDDEN),
+    NOTALLOWED_VIEW_ATTACHMENT_ERROR ("notAllowedToViewAttachment", "No permissions to view such attachment.", HttpStatus.FORBIDDEN),
     SUCCESS_THANKS ("none", "Thank you.", HttpStatus.OK),
     MISSING_PARAMETER_ERROR ("missingParameter", "Missing parameter.", HttpStatus.PRECONDITION_FAILED),
     UNKNOWN_MESSAGE_SID ("unknownMessageSid", "Unknown message SID.", HttpStatus.NOT_FOUND),
     ALREADY_EXISTING_RESOURCE ("resourceAlreadyExists", "Resource already exists.", HttpStatus.CONFLICT),
-    ALREADY_EXISTING_RELATION ("relationAlreadyExists", "Such relation already exists.", HttpStatus.CONFLICT),
+    ALREADY_EXISTING_RELATION_ERROR ("relationAlreadyExists", "Such relation already exists.", HttpStatus.CONFLICT),
     NON_EXISTING_RELATION ("nonExistingRelation", "Such relation does not exist.", HttpStatus.CONFLICT);
 
 
@@ -72,6 +75,21 @@ public enum ErrorsAndWarnings {
         jObj.addProperty("error_description", this.errorDescription);
         jObj.addProperty("details", details);
         return jObj;
+    }
+
+    public String toHTML() {
+        String str = "<br><b>HTTP Status " + this.httpStatus + "</b></br>";
+        str = str + "<br>code: " + this.codeId + "</br>";
+        str = str + "<br>description: " + this.errorDescription + "</br>";
+        return str;
+    }
+
+    public String toHTMLWithDetails(String details) {
+        String str = "<br><b>HTTP Status " + this.httpStatus + "</b></br>";
+        str = str + "<br>code: " + this.codeId + "</br>";
+        str = str + "<br>description: " + this.errorDescription + "</br>";
+        str = str + "<br>details: " + details + "</br>";
+        return str;
     }
 
 }

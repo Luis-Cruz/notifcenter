@@ -30,10 +30,10 @@ public class AttachmentAdapter implements JsonAdapter<Attachment> {
         jObj.addProperty("name", obj.getDisplayName());
         jObj.addProperty("filename", obj.getFilename());
         jObj.addProperty("externalId", obj.getExternalId());
-        jObj.addProperty("creationDate", obj.getCreationDate().toString());
+        jObj.addProperty("creationDate", obj.getCreationDate().toString("dd.MM.yyyy HH:mm:ss.SSS"));
         jObj.addProperty("contentType", obj.getContentType());
         jObj.addProperty("size", obj.getSize());
-        jObj.addProperty("downloadUrl", NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/apiaplicacoes/attachments/" + obj.getExternalId());
+        jObj.addProperty("downloadUrl", NotifcenterSpringConfiguration.getConfiguration().notifcenterUrlForAttachments() + obj.getExternalId());
         //jObj.addProperty("downloadUrl", FileDownloadServlet.getDownloadUrl(file));
         //jObj.addProperty("contentKey", obj.getContentKey()); //igual a externalId
         return jObj;
@@ -41,7 +41,9 @@ public class AttachmentAdapter implements JsonAdapter<Attachment> {
 
     private String getRequiredValue(JsonObject obj, String property) {
         if (obj.has(property)) {
-            return obj.get(property).getAsString();
+            if (!obj.get(property).getAsString().isEmpty()) {
+                return obj.get(property).getAsString();
+            }
         }
         throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Missing parameter " + property + "!"); //"HTTP Status 412 - Não foi possível criar a entidade"
     }
