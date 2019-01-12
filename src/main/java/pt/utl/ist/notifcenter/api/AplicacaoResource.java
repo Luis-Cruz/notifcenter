@@ -3,7 +3,7 @@
 //curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"param1":"value1"}'
 
 //OK5:
-//GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/attachments/{fileId} //attachment is downloaded if user belongs to gruposDestinatarios of its message
+//GET http://{{DOMAIN}}:8080/notifcenter/mensagens/attachments/{fileId} //attachment is downloaded if user belongs to gruposDestinatarios of its message
 //GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/attachments/{fileId}
 //GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/{msg}/listattachments
 
@@ -12,14 +12,17 @@
 //GET http://{{DOMAIN}}:8080/notifcenter/apicanais/listcanais
 //GET http://{{DOMAIN}}:8080/notifcenter/apicanais/listclassescanais
 //GET http://{{DOMAIN}}:8080/notifcenter/apicanais/281835753963522 (show canal)
-//POST {"channelType": "Messenger", "accountSID":"accountSID1", "authToken":"authToken1", "fromPhoneNumber":"fromPhoneNumber1", "uriaa":"uri2"} -> http://{{DOMAIN}}:8080/notifcenter/apicanais/addcanal
+//POST {"createChannel": "Messenger", "accountSID":"accountSID1", "authToken":"authToken1", "fromPhoneNumber":"fromPhoneNumber1", "uriaa":"uri2"} -> http://{{DOMAIN}}:8080/notifcenter/apicanais/addcanal
 
-
+//TODO
 //OK3:
 //POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/addaplicacao?name=app_99&redirect_uri=http://app99_site.com/code&description=descricao_app99
+//POST {"name":"app_55", "description":"d5", "redirect_uri":"http://app55_site.com/code&description=descricao_app55", "author":"author1", "site_url": "siteurl1"} http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/addaplicacao2
 //GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/listaplicacoes
+
 //POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715716/update?description=d1&name=n1&redirect_uri=r1&author=a1&site_urlTONULL=s1
 //POST {"description":"d2", "name":"n2", "redirect_uri":"r2", "author":"a2", "site_url": "s2"} http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715716/update2
+
 //POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715716/delete
 
 //GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714 (view app)
@@ -27,7 +30,8 @@
 //OK2:
 //POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281835753963522/messagedeliverystatus // {canal}/messagedeliverystatus
 //GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281681135140872/deliverystatus
-//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/sendmensagem?canalnotificacao=281775624421380&gdest=281702609977345&assunto=umassunto3&textocurto=aparecenowhatsppcurto3&textolongo=algumtextolongo3
+////POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/sendmensagem?canalnotificacao=281775624421380&gdest=281702609977345&assunto=umassunto3&textocurto=aparecenowhatsppcurto3&textolongo=algumtextolongo3
+//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/sendmensagem {json, anexo, anexo, anexo...}
 //DEBUG http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/deletemensagens //?msg=opcional
 
 //OK:
@@ -57,7 +61,7 @@
 //GET http://{{DOMAIN}}:8080/notifcenter/apiutilizadores/281582350893057/281715494879236 ///{utilizador}/{contacto}
 //POST http://{{DOMAIN}}:8080/notifcenter/apiutilizadores/281582350893057/281715494879234/delete
 //POST http://{{DOMAIN}}:8080/notifcenter/apiutilizadores/281582350893057/281715494879236/update
-//POST {"data":"novos_dados"} http://{{DOMAIN}}:8080/notifcenter/apiutilizadores/281582350893057/281715494879236/update2
+//POST {"dados":"novos_dados"} http://{{DOMAIN}}:8080/notifcenter/apiutilizadores/281582350893057/281715494879236/update2
 
 
 
@@ -70,7 +74,7 @@
 //stackoverflow: https://stackoverflow.com/questions/45204684/robot-framework-differences-between-suite-setup-and-test-setup
 
 //https://www.twilio.com/console/sms/whatsapp/learn
-//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/sendmensagem?canalnotificacao=281775624421380&gdest=281702609977345&assunto=umassunto1&textocurto=aparecenowhatsppcurto&textolongo=algumtextolongo
+////POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/sendmensagem?canalnotificacao=281775624421380&gdest=281702609977345&assunto=umassunto1&textocurto=aparecenowhatsppcurto&textolongo=algumtextolongo
 
 //DADOS EXEMPLO:
 //app "app_77": 281736969715714
@@ -93,7 +97,7 @@
 //GET http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714   (view app) ?access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
 //POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/addremetente?name=ric&access_token=NTYzMTYwNDA2ODE4ODIwOjYwNWJiYTg4OGViMTAwYzdmMTc3ZjQ1OWVlZmM3MjE2NmMyZGY4MGNiOGVlNDk4NDI0Mzc0MmNhMzZiYTk0YmY0MDRkMGI3MDYzYzAzMzE2NTJjYzRhZDRmMzI1NzUyZDUyNzk1MjQ5YzdkNWNhZWMyZTI3MDQ2NTUxMzc1Mjdi
 //GET/POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/notifcentercallback
-//POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/sendmensagem?canalnotificacao=281775624421380&gdest=281702609977345&assunto=umassunto1&textocurto=aparecenowhatsppcurto&textolongo=algumtextolongo
+////POST http://{{DOMAIN}}:8080/notifcenter/apiaplicacoes/281736969715714/sendmensagem?canalnotificacao=281775624421380&gdest=281702609977345&assunto=umassunto1&textocurto=aparecenowhatsppcurto&textolongo=algumtextolongo
 
 //UTEIS:
 //http://{{DOMAIN}}:8080/notifcenter/apicanais/listcanais
@@ -122,14 +126,12 @@ package pt.utl.ist.notifcenter.api;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.fenixedu.bennu.core.groups.DynamicGroup;
 import org.fenixedu.bennu.core.groups.Group;
 import org.fenixedu.bennu.core.rest.BennuRestResource;
 
-import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.core.security.SkipCSRF;
 import org.fenixedu.bennu.io.domain.FileStorage;
 import org.fenixedu.bennu.io.domain.GenericFile;
@@ -138,7 +140,6 @@ import org.fenixedu.bennu.oauth.annotation.OAuthEndpoint;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 
 import org.fenixedu.bennu.spring.security.CSRFTokenRepository;
-import org.joda.time.DateTime;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -148,8 +149,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.multipart.MultipartFile;
-import pt.ist.fenixframework.Atomic;
-import pt.ist.fenixframework.DomainObject;
 import pt.ist.fenixframework.FenixFramework;
 import pt.utl.ist.notifcenter.api.json.*;
 
@@ -165,13 +164,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/apiaplicacoes")
 @SpringFunctionality(app = NotifcenterController.class, title = "title.Notifcenter.api.aplicacoes")
-public class
-AplicacaoResource extends BennuRestResource {
+public class AplicacaoResource extends BennuRestResource {
 
     /*
     Numa API REST, neste caso o resource é aplicação, e queremos adicionar
@@ -237,10 +234,10 @@ AplicacaoResource extends BennuRestResource {
     @SkipCSRF ///INDIFERENTE USAR ISTO SE USAR O MEU INTERCEPTOR
     @RequestMapping(value = "/addaplicacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement addAplicacao(@RequestParam(value = "description") String description,
-                               @RequestParam(value = "name") String name,
-                               @RequestParam(value = "redirect_uri") String redirectUrl,
-                               @RequestParam(value = "author", defaultValue = "none") String authorName,
-                               @RequestParam(value = "site_url", defaultValue = "none") String siteUrl) {
+                                    @RequestParam(value = "name") String name,
+                                    @RequestParam(value = "redirect_uri") String redirectUrl,
+                                    @RequestParam(value = "author") String authorName,
+                                    @RequestParam(value = "site_url") String siteUrl) {
 
         if (Aplicacao.findByAplicacaoName(name) != null) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APPNAME_ERROR);
@@ -248,6 +245,13 @@ AplicacaoResource extends BennuRestResource {
 
         Aplicacao app = Aplicacao.createAplicacao(name, redirectUrl, description, authorName, siteUrl);
         return view(app, AplicacaoAdapter.class);
+    }
+
+    @SkipCSRF
+    @RequestMapping(value = "/addaplicacao2", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement addAplicacao2(@RequestBody JsonElement body) {
+
+        return view(create(body, Aplicacao.class), AplicacaoAdapter.class);
     }
 
     @RequestMapping(value = "/{app}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -273,6 +277,13 @@ AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
         }
 
+        Aplicacao foundApp;
+        if ((foundApp = Aplicacao.findByAplicacaoName(name)) != null) {
+            if (!app.equals(foundApp)) {
+                throw new NotifcenterException(ErrorsAndWarnings.INVALID_APPNAME_ERROR);
+            }
+        }
+
         return view(app.updateAplicacao(name, redirectUrl, description, authorName, siteUrl), AplicacaoAdapter.class);
     }
 
@@ -295,6 +306,11 @@ AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
         }
 
+        //TODO: what to do with RREQUIRES_APPROVAL case?
+        if (!app.getPermissoesAplicacao().equals(AppPermissions.ALLOW_ALL)) {
+            throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_TO_ADD_GROUP_ERROR, "Please contact system administrators.");
+        }
+
         JsonObject jObj = new JsonObject();
         jObj.add("deleted_app", view(app, AplicacaoAdapter.class));
 
@@ -309,7 +325,7 @@ AplicacaoResource extends BennuRestResource {
         JsonObject jObj = new JsonObject();
         JsonArray jArray = new JsonArray();
 
-        for (Aplicacao a: SistemaNotificacoes.getInstance().getAplicacoesSet()) {
+        for (Aplicacao a : SistemaNotificacoes.getInstance().getAplicacoesSet()) {
             jArray.add(view(a, AplicacaoAdapter.class));
         }
 
@@ -349,7 +365,7 @@ AplicacaoResource extends BennuRestResource {
     @SkipCSRF
     @RequestMapping(value = "/{app}/{remetente}/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement updateRemetente(@PathVariable("app") Aplicacao app, @PathVariable(value = "remetente") Remetente remetente,
-                                        @RequestParam(value = "name") String name) {
+                                       @RequestParam(value = "name") String name) {
 
         if (!FenixFramework.isDomainObjectValid(app)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
@@ -359,15 +375,13 @@ AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_REMETENTE_ERROR);
         }
 
-        remetente.update(name);
-
-        return view(remetente, RemetenteAdapter.class);
+        return view(remetente.update(name), RemetenteAdapter.class);
     }
 
     @SkipCSRF
     @RequestMapping(value = "/{app}/{remetente}/update2", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement updateRemetente2(@PathVariable("app") Aplicacao app, @PathVariable(value = "remetente") Remetente remetente,
-                                       @RequestBody JsonElement body) {
+                                        @RequestBody JsonElement body) {
 
         if (!FenixFramework.isDomainObjectValid(app)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
@@ -417,7 +431,8 @@ AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.ALREADY_EXISTING_RELATION_ERROR, "Remetente " + remetente.getExternalId() + " already contains group " + group.getExternalId() + "!");
         }
 
-        if(!app.getPermissoesAplicacao().equals(AppPermissions.ALLOW_ALL) ) {
+        //TODO: what to do with RREQUIRES_APPROVAL case?
+        if (!app.getPermissoesAplicacao().equals(AppPermissions.ALLOW_ALL)) {
             throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_TO_ADD_GROUP_ERROR, "Please contact system administrators.");
         }
 
@@ -435,7 +450,7 @@ AplicacaoResource extends BennuRestResource {
     @SkipCSRF
     @RequestMapping(value = "/{app}/{remetente}/removegrupodestinario", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement removeGrupoDestinario(@PathVariable("app") Aplicacao app, @PathVariable(value = "remetente") Remetente remetente,
-                                          @RequestParam("group") PersistentGroup group) {
+                                             @RequestParam("group") PersistentGroup group) {
 
         if (!FenixFramework.isDomainObjectValid(app)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
@@ -447,6 +462,11 @@ AplicacaoResource extends BennuRestResource {
 
         if (!remetente.getGruposSet().contains(group)) {
             throw new NotifcenterException(ErrorsAndWarnings.NON_EXISTING_RELATION, "Remetente " + remetente.getExternalId() + " does not have group id " + group.getExternalId() + " permissions!");
+        }
+
+        //TODO: what to do with RREQUIRES_APPROVAL case?
+        if (!app.getPermissoesAplicacao().equals(AppPermissions.ALLOW_ALL)) {
+            throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_TO_ADD_GROUP_ERROR, "Please contact system administrators.");
         }
 
         remetente.removeGroupToSendMesssages(group);
@@ -484,7 +504,7 @@ AplicacaoResource extends BennuRestResource {
 
         return jObj;
     }
-    
+
     @RequestMapping(value = "/{app}/listremetentes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement listRemetentes(@PathVariable("app") Aplicacao app) {
 
@@ -495,7 +515,7 @@ AplicacaoResource extends BennuRestResource {
         JsonObject jObj = new JsonObject();
         JsonArray jArray = new JsonArray();
 
-        for (Remetente r: app.getRemetentesSet()) {
+        for (Remetente r : app.getRemetentesSet()) {
             jArray.add(view(r, RemetenteAdapter.class));
         }
 
@@ -517,7 +537,7 @@ AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
         }
 
-        if (!FenixFramework.isDomainObjectValid(remetente) || !app.getRemetentesSet().contains(remetente)) {
+        if (!FenixFramework.isDomainObjectValid(remetente)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_REMETENTE_ERROR);
         }
 
@@ -525,19 +545,15 @@ AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_ERROR);
         }
 
-        for (CanalNotificacao cn : remetente.getCanaisNotificacaoSet()) {
-            if (cn.getCanal().equals(canal)) {
-                throw new NotifcenterException(ErrorsAndWarnings.ALREADY_EXISTING_RESOURCE, "Notification channel id " + cn.getExternalId()  + " for user " + remetente.getExternalId() + " and channel " + canal.getExternalId() + " was already created before.");
-            }
-        }
+        JsonObject jObj = new JsonObject();
+        jObj.addProperty("app", app.getExternalId());
+        jObj.addProperty("remetente", remetente.getExternalId());
+        jObj.addProperty("canal", canal.getExternalId());
 
-        CanalNotificacao pedidoCriacaoCanalNotificacao;
+        CanalNotificacao pedidoCriacaoCanalNotificacao = create(jObj, CanalNotificacao.class);
 
-        if(app.getPermissoesAplicacao().equals(AppPermissions.ALLOW_ALL) ) {
-            pedidoCriacaoCanalNotificacao = CanalNotificacao.createCanalNotificacao(canal, remetente, false);
-        }
-        else {
-            pedidoCriacaoCanalNotificacao = CanalNotificacao.createCanalNotificacao(canal, remetente, true);
+        if (app.getPermissoesAplicacao().equals(AppPermissions.ALLOW_ALL)) {
+            pedidoCriacaoCanalNotificacao.approveCanalNotificacao();
         }
 
         return view(pedidoCriacaoCanalNotificacao, CanalNotificacaoAdapter.class);
@@ -556,7 +572,7 @@ AplicacaoResource extends BennuRestResource {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_REMETENTE_ERROR);
         }
 
-        if (!FenixFramework.isDomainObjectValid(cn) || !remetente.getCanaisNotificacaoSet().contains(cn)){
+        if (!FenixFramework.isDomainObjectValid(cn) || !remetente.getCanaisNotificacaoSet().contains(cn)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR);
         }
 
@@ -584,7 +600,7 @@ AplicacaoResource extends BennuRestResource {
         JsonObject jObj = new JsonObject();
         JsonArray jArray = new JsonArray();
 
-        for (CanalNotificacao cn: remetente.getCanaisNotificacaoSet()) {
+        for (CanalNotificacao cn : remetente.getCanaisNotificacaoSet()) {
             jArray.add(view(cn, CanalNotificacaoAdapter.class));
         }
 
@@ -609,6 +625,7 @@ AplicacaoResource extends BennuRestResource {
 
         return view(cn, CanalNotificacaoAdapter.class);
     }
+
     @SkipCSRF
     @RequestMapping(value = "disapprovecanalnotificacao", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement disapproveCanalNotificacao(@RequestParam("cn") CanalNotificacao cn) {
@@ -658,8 +675,8 @@ AplicacaoResource extends BennuRestResource {
         ///TwilioWhatsapp
         //"MessageStatus":"delivered","MessageSid":"SM9f705525cc4143ef8dece27557549a5f"
         //if (canal.getClass().getSimpleName().equals("TwilioWhatsapp")) {
-        String idExterno = getRequiredValueFromMap(/*jObj.getAsJsonObject("body").getAsJsonObject()*/requestParams, "MessageSid");
-        String estadoEntrega = getRequiredValueFromMap(/*jObj.getAsJsonObject("body").getAsJsonObject()*/requestParams, "MessageStatus");
+        String idExterno = UtilsResource.getRequiredValueFromMultiValueMap(/*jObj.getAsJsonObject("body").getAsJsonObject()*/requestParams, "MessageSid");
+        String estadoEntrega = UtilsResource.getRequiredValueFromMultiValueMap(/*jObj.getAsJsonObject("body").getAsJsonObject()*/requestParams, "MessageStatus");
         ///}
 
         for (EstadoDeEntregaDeMensagemEnviadaAContacto e : canal.getEstadoDeEntregaDeMensagemEnviadaAContactoSet()) {
@@ -692,40 +709,6 @@ AplicacaoResource extends BennuRestResource {
         throw new NotifcenterException(ErrorsAndWarnings.UNKNOWN_MESSAGE_SID);
     }
 
-    private String getRequiredValue(JsonObject obj, String property) {
-        if (obj.has(property)) {
-            if (!obj.get(property).getAsString().isEmpty()) {
-                return obj.get(property).getAsString();
-            }
-        }
-        throw new NotifcenterException(ErrorsAndWarnings.MISSING_PARAMETER_ERROR, "Missing parameter " + property + "!");
-    }
-
-    private String getRequiredValueFromMap(MultiValueMap<String, String> map, String key) {
-        List<String> value = map.get(key);
-        if (value != null) {
-            if (!value.get(0).isEmpty()) { //here we only return the first parameter found
-                return value.get(0);
-            }
-        }
-        throw new NotifcenterException(ErrorsAndWarnings.MISSING_PARAMETER_ERROR, "Missing parameter " + key + "!");
-    }
-
-    private String[] getRequiredArrayValue(JsonObject obj, String property) {
-        if (obj.has(property)) {
-            //Gson googleJson = new Gson();
-            //ArrayList<String> arrayList = googleJson.fromJson(obj.get(property).getAsJsonArray(), ArrayList.class);
-            ArrayList<String> arrayList = new ArrayList<>();
-            Iterator<JsonElement> i = obj.get(property).getAsJsonArray().iterator();
-
-            while (i.hasNext()) {
-                arrayList.add(i.next().getAsString());
-            }
-
-            return arrayList.toArray(new String[0]);
-        }
-        throw new NotifcenterException(ErrorsAndWarnings.MISSING_PARAMETER_ERROR, "Missing parameter " + property + "!");
-    }
 
     @RequestMapping(value = "/{msg}/deliverystatus", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement getMessageStatus(/*@PathVariable("app") Aplicacao app,*/ @PathVariable("msg") Mensagem msg) {
@@ -755,14 +738,52 @@ AplicacaoResource extends BennuRestResource {
     @SkipCSRF
     @RequestMapping(value = "/{app}/sendmensagem", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement sendMensagem(@PathVariable("app") Aplicacao app,
-                                   @RequestParam("canalnotificacao") CanalNotificacao canalNotificacao,
-                                   @RequestParam("gdest") PersistentGroup[] gruposDestinatarios,
-                                   @RequestParam("assunto") String assunto,
-                                   @RequestParam("textocurto") String textoCurto,
-                                   @RequestParam("textolongo") String textoLongo,
-                                   @RequestParam(value = "dataentrega", required = false) @DateTimeFormat(pattern="dd.MM.yyyy HH:mm:ss.SSS") DateTime dataEntrega,
-                                   @RequestParam(value = "callbackurl", required = false) String callbackUrlEstadoEntrega,
-                                   @RequestParam(value = "anexos", required = false) MultipartFile[] anexos) {
+                                     @RequestPart(value = "json", required = true) String json,
+                                     @RequestPart(value = "anexo", required = false) MultipartFile[] anexos) {
+
+        if (!FenixFramework.isDomainObjectValid(app)) {
+            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
+        }
+
+        JsonObject jObj = UtilsResource.stringToJson(json);
+        UtilsResource.deletePropertyFromJsonObject(jObj, "app"); //avoid hacks
+        jObj.addProperty("app", app.getExternalId());
+        Mensagem msg = create(jObj, Mensagem.class);
+
+        if (anexos != null) {
+            for (MultipartFile file: anexos) {
+                try {
+                    Attachment at =  Attachment.createAttachment(msg, file.getOriginalFilename(), "lowlevelname-" + msg.getExternalId() + "-" + file.getOriginalFilename(), file.getInputStream());
+                    //debug
+                    //System.out.println("anexo: " + FileDownloadServlet.getDownloadUrl(at));
+                    //System.out.println(view(at, AttachmentAdapter.class).toString());
+                }
+                catch (IOException e) {
+                    //debug
+                    //e.printStackTrace();
+                    msg.delete(); //apagar mensagem criada em caso de falha num anexo
+                    throw new NotifcenterException(ErrorsAndWarnings.INVALID_MESSAGE_ERROR, "Attachment " + file.getOriginalFilename() + " could not be loaded.");
+                }
+            }
+        }
+
+        Canal ic = msg.getCanalNotificacao().getCanal();
+        ic.sendMessage(msg);
+
+        return view(msg, MensagemAdapter.class);
+    }
+
+    /*@SkipCSRF
+    @RequestMapping(value = "/{app}/sendmensagem", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement sendMensagem(@PathVariable("app") Aplicacao app,
+                                    @RequestParam("canalnotificacao") CanalNotificacao canalNotificacao,
+                                    @RequestParam("gdest") PersistentGroup[] gruposDestinatarios,
+                                    @RequestParam("assunto") String assunto,
+                                    @RequestParam("textocurto") String textoCurto,
+                                    @RequestParam("textolongo") String textoLongo,
+                                    @RequestParam(value = "dataentrega", required = false) @DateTimeFormat(pattern = "dd.MM.yyyy HH:mm:ss.SSS") DateTime dataEntrega,
+                                    @RequestParam(value = "callbackurl", required = false) String callbackUrlEstadoEntrega,
+                                    @RequestParam(value = "anexo", required = false) MultipartFile[] anexos) {
 
         if (!FenixFramework.isDomainObjectValid(app)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
@@ -774,53 +795,9 @@ AplicacaoResource extends BennuRestResource {
         ic.sendMessage(msg);
 
         return view(msg, MensagemAdapter.class);
-    }
+    }*/
 
-    @SkipCSRF
-    @RequestMapping(value = "/{app}/sendmensagem2", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonElement sendMensagem2(@PathVariable("app") Aplicacao app,
-                                     @RequestPart(value = "json", required = true) String message_json,
-                                     @RequestPart(value = "anexos", required = false) MultipartFile[] anexos) {
-
-        //try to get JSON data:
-        JsonElement jsonElement;
-        try {
-            JsonParser parser = new JsonParser();
-            jsonElement = parser.parse(message_json);
-        }
-        catch (Exception e) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_JSON_ERROR, "Bad parameter json: " + message_json);
-        }
-
-        if (!FenixFramework.isDomainObjectValid(app)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_APP_ERROR);
-        }
-
-        //extract message params from JsonElement:
-        String cn = getRequiredValue(jsonElement.getAsJsonObject(), "canalnotificacao");
-        CanalNotificacao canalNotificacao = getDomainObject(CanalNotificacao.class, cn);
-
-        String[] gd = getRequiredArrayValue(jsonElement.getAsJsonObject(), "gdest");
-        PersistentGroup[] gruposDestinatarios = getDomainObjectsArray(PersistentGroup.class, gd).toArray(new PersistentGroup[0]);
-
-        String assunto = getRequiredValue(jsonElement.getAsJsonObject(), "assunto");
-        String textoCurto = getRequiredValue(jsonElement.getAsJsonObject(), "textocurto");
-        String textoLongo = getRequiredValue(jsonElement.getAsJsonObject(), "textolongo");
-
-        String de = getRequiredValueOrReturnNullInstead(jsonElement.getAsJsonObject(), "dataentrega");
-        DateTime dataEntrega = getDatetime(de);
-
-        String callbackUrlEstadoEntrega = getRequiredValueOrReturnNullInstead(jsonElement.getAsJsonObject(), "callbackurl");
-
-        //try to create and send message
-        Mensagem msg = verifyParamsAndCreateAMessage(app, canalNotificacao, gruposDestinatarios, assunto, textoCurto, textoLongo, dataEntrega, callbackUrlEstadoEntrega, anexos);
-        Canal ic = msg.getCanalNotificacao().getCanal();
-        ic.sendMessage(msg);
-
-        return view(msg, MensagemAdapter.class);
-    }
-
-    private Mensagem verifyParamsAndCreateAMessage(Aplicacao app, CanalNotificacao canalNotificacao, PersistentGroup[] gruposDestinatarios, String assunto, String textoCurto, String textoLongo, DateTime dataEntrega, String callbackUrlEstadoEntrega, MultipartFile[] anexos) {
+    /*private Mensagem verifyParamsAndCreateAMessage(Aplicacao app, CanalNotificacao canalNotificacao, PersistentGroup[] gruposDestinatarios, String assunto, String textoCurto, String textoLongo, DateTime dataEntrega, String callbackUrlEstadoEntrega, MultipartFile[] anexos) {
 
         if (!FenixFramework.isDomainObjectValid(canalNotificacao) || !app.getRemetentesSet().contains(canalNotificacao.getRemetente())) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_CANALNOTIFICACAO_ERROR, "Such canalnotificacao doesnt exist.");
@@ -844,154 +821,31 @@ AplicacaoResource extends BennuRestResource {
                     NotifcenterSpringConfiguration.getConfiguration().notifcenterMensagemTextoCurtoMaxSize() + " characters long.");
         }
 
-        //Tenho de criar a mensagem antes de criar os attachments
+        //Create message and add attachments
         Mensagem msg = Mensagem.createMensagem(canalNotificacao, gruposDestinatarios, assunto, textoCurto, textoLongo, dataEntrega, callbackUrlEstadoEntrega);
 
-        ///ArrayList<Attachment> attachments = null;
-
         if (anexos != null) {
-            ///attachments = new ArrayList<>();
-
             for (MultipartFile file: anexos) {
                 try {
                     Attachment at =  Attachment.createAttachment(msg, file.getOriginalFilename(), "lowlevelname-" + canalNotificacao.getExternalId() + "-" + file.getOriginalFilename(), file.getInputStream());
-                    ///attachments.add(at);
+                    //debug
                     //System.out.println("anexo: " + FileDownloadServlet.getDownloadUrl(at));
-                    //debug:
-                    System.out.println(view(at, AttachmentAdapter.class).toString());
+                    //System.out.println(view(at, AttachmentAdapter.class).toString());
                 }
                 catch (IOException e) {
-                    e.printStackTrace(); ///debug - depois comentar isto
-                    msg.delete(); ///apagar mensagem criada em caso de falha num anexo
+                    //debug
+                    //e.printStackTrace();
+                    msg.delete(); //apagar mensagem criada em caso de falha num anexo
                     throw new NotifcenterException(ErrorsAndWarnings.INVALID_MESSAGE_ERROR, "Attachment " + file.getOriginalFilename() + " could not be loaded.");
                 }
             }
         }
 
-        ///Mensagem msg = Mensagem.createMensagem(canalNotificacao, gruposDestinatarios, assunto, textoCurto, textoLongo, dataEntrega, callbackUrlEstadoEntrega, attachments);
-
         return msg;
-    }
-
-    private static <T> T getDomainObject(Class<T> clazz, String id) {
-        try {
-            DomainObject dObj = FenixFramework.getDomainObject(id);
-            T t = (T) dObj;
-            return t;
-        }
-        catch (Exception e) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Invalid parameter " + clazz.getSimpleName() + " id " + id + " !");
-        }
-    }
-
-    /*
-    private <T> List<T> getDomainObjectsArray(Class<T> clazz, String[] id) {
-        int i = 0;
-
-        try {
-            ArrayList<T> al = new ArrayList<>();
-
-            for(i = 0; i < id.length; i++) {
-                DomainObject dObj = FenixFramework.getDomainObject(id[i]);
-                T t = (T) dObj;
-                al.add(t);
-            }
-
-            return al;
-        }
-        catch (Exception e) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Invalid parameter " + clazz.getSimpleName() + " id " + id[i] + " !");
-        }
-    }
-    */
-
-    private <T> List<T> getDomainObjectsArray(Class<T> clazz, String[] id) {
-        ArrayList<T> al = new ArrayList<>();
-
-        for (String i : id) {
-            try {
-                DomainObject dObj = FenixFramework.getDomainObject(i);
-                T t = (T) dObj;
-                al.add(t);
-            }
-            catch (Exception e) {
-                throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Invalid parameter " + clazz.getSimpleName() + " id " + i + " !");
-            }
-        }
-
-        return al;
-    }
-
-    private DateTime getDatetime(String dt) {
-        try {
-            DateTime date = DateTime.parse(dt, org.joda.time.format.DateTimeFormat.forPattern("dd.MM.yyyy HH:mm:ss.SSS"));
-            return date;
-        }
-        catch (Exception e) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_DATETIME_ERROR, "Invalid datetime " + dt + " !");
-        }
-    }
-
-    private String getRequiredValueOrReturnNullInstead(JsonObject obj, String property) {
-        if (obj.has(property)) {
-            if (!obj.get(property).getAsString().isEmpty()) {
-                return obj.get(property).getAsString();
-            }
-        }
-        return null;
-    }
+    }*/
 
 
     //AGRUPAMENTO - attachments
-
-    private User getAuthenticatedUser() {
-        return Authenticate.getUser();
-    }
-
-    private boolean isUserLoggedIn() {
-        return Authenticate.isLogged();
-    }
-
-    @RequestMapping(value = "/attachments/{fileId}", method = RequestMethod.GET)
-    public HttpEntity<byte[]> downloadAttachment(@PathVariable("fileId") Attachment attachment) {
-
-        if (!isUserLoggedIn()) {
-            throw new NotifcenterException(ErrorsAndWarnings.PLEASE_LOG_IN);
-            ///return "redirect:/login?callback=" + request.getRequestURL();
-        }
-
-        User user = getAuthenticatedUser();
-
-        if (user == null || !FenixFramework.isDomainObjectValid(user)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_USER_ERROR);
-        }
-
-        if (!FenixFramework.isDomainObjectValid(attachment)) {
-            throw new NotifcenterException(ErrorsAndWarnings.INVALID_ATTACHMENT_ERROR);
-        }
-
-        if (!attachment.isAccessible(user)) {
-            throw new NotifcenterException(ErrorsAndWarnings.NOTALLOWED_VIEW_ATTACHMENT_ERROR);
-        }
-
-        //debug
-        /*
-        System.out.println("#############content key: "+ attachment.getContentKey());
-        System.out.println("#############checksum algorithm: "+ attachment.getChecksumAlgorithm());
-        System.out.println("#############checksum: "+ attachment.getChecksum());
-        */
-
-        byte[] fileContent = attachment.getContent();
-
-        HttpHeaders header = new HttpHeaders();
-        header.add("Content-Type", attachment.getContentType());
-        header.add("Content-Disposition", "attachment; filename=" + attachment.getDisplayName().replace(" ", "_"));
-        header.add("Content-Length", String.valueOf(fileContent.length));
-        ///header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + attachment.getDisplayName().replace(" ", "_"));
-        ///header.setContentLength(fileContent.length);
-
-        return new HttpEntity<>(fileContent, header);
-    }
 
     @RequestMapping(value = "/{app}/attachments/{fileId}", method = RequestMethod.GET)
     public HttpEntity<byte[]> downloadAttachmentApp(@PathVariable("app") Aplicacao app, @PathVariable("fileId") Attachment attachment) {
@@ -1634,8 +1488,8 @@ System.out.println(app.getRemetentesSet().stream().map(Remetente::getNome).colle
         System.out.println("####### got new notifcentercallback message!!");
         System.out.println(jObj.toString());
 
-        if((sid = getRequiredValue(jObj, "sid")) != null && (status = getRequiredValue(jObj, "MessageStatus")) != null) {
-            System.out.println("sid: " + sid + ", messsagestatus: " + status + ", MessageSid: " + getRequiredValue(jObj, "MessageSid") + ", AccountSid: " + getRequiredValue(jObj, "AccountSid"));
+        if((sid = UtilsResource.getRequiredValue(jObj, "sid")) != null && (status = UtilsResource.getRequiredValue(jObj, "MessageStatus")) != null) {
+            System.out.println("sid: " + sid + ", messsagestatus: " + status + ", MessageSid: " + UtilsResource.getRequiredValue(jObj, "MessageSid") + ", AccountSid: " + UtilsResource.getRequiredValue(jObj, "AccountSid"));
         }
         else {
             System.out.println("no sid and status");

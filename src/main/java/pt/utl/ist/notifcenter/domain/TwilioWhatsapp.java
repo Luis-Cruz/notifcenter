@@ -14,11 +14,12 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.request.async.DeferredResult;
 import pt.ist.fenixframework.Atomic;
 import pt.utl.ist.notifcenter.api.HTTPClient;
+import pt.utl.ist.notifcenter.api.UtilsResource;
 import pt.utl.ist.notifcenter.utils.Utils;
 
 import java.util.*;
 
-@AnotacaoCanal(classFields = {"accountSID", "authToken", "fromPhoneNumber", "uri"})
+@AnotacaoCanal//(classFields = {"accountSID", "authToken", "fromPhoneNumber", "uri"})
 public class TwilioWhatsapp extends TwilioWhatsapp_Base {
 
     private TwilioWhatsapp() {
@@ -43,27 +44,23 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
     @Atomic
     public TwilioWhatsapp updateChannel(@Nullable final String accountSID, @Nullable final String authToken, @Nullable final String fromPhoneNumber, @Nullable final String uri) {
 
-        if (isValidString(accountSID)) {
+        if (Utils.isValidString(accountSID)) {
             this.setAccountSID(accountSID);
         }
 
-        if (isValidString(authToken)) {
+        if (Utils.isValidString(authToken)) {
             this.setAuthToken(authToken);
         }
 
-        if (isValidString(fromPhoneNumber)) {
+        if (Utils.isValidString(fromPhoneNumber)) {
             this.setFromPhoneNumber(fromPhoneNumber);
         }
 
-        if (isValidString(uri)) {
+        if (Utils.isValidString(uri)) {
             this.setUri(uri);
         }
 
         return this;
-    }
-
-    public boolean isValidString(@Nullable String str) {
-        return (str != null && !str.isEmpty());
     }
 
     public static TwilioWhatsapp createTwilioWhatsappFromPropertiesFile(final String file) {
@@ -96,7 +93,7 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         body.put("To", Arrays.asList("initializing...")); ///
         body.put("From", Arrays.asList(this.getFromPhoneNumber()));
 
-        String linkForMessage = " Check " + NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/notifcenter/" + msg.getExternalId() + "/view";
+        String linkForMessage = " Check " + NotifcenterSpringConfiguration.getConfiguration().notifcenterUrl() + "/mensagens/" + msg.getExternalId();
         String message = msg.getTextoCurto() + linkForMessage;
         body.put("Body", Arrays.asList(message));
 
@@ -161,8 +158,8 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         HTTPClient.printResponseEntity(responseEntity);
 
         JsonElement jObj = new JsonParser().parse(responseEntity.getBody());
-        String idExterno = getRequiredValueOrReturnNullInstead(jObj.getAsJsonObject(), "sid");
-        String estadoEntrega = getRequiredValueOrReturnNullInstead(jObj.getAsJsonObject(), "status");
+        String idExterno = UtilsResource.getRequiredValueOrReturnNullInstead(jObj.getAsJsonObject(), "sid");
+        String estadoEntrega = UtilsResource.getRequiredValueOrReturnNullInstead(jObj.getAsJsonObject(), "status");
 
         //EstadoDeEntregaDeMensagemEnviadaAContacto.createEstadoDeEntregaDeMensagemEnviadaAContacto(canal, msg, contacto, idExterno, estadoEntrega);
         edm.changeIdExternoAndEstadoEntrega(idExterno, estadoEntrega);
@@ -173,15 +170,6 @@ public class TwilioWhatsapp extends TwilioWhatsapp_Base {
         else {
             System.out.println("Success on sending message to " + edm.getContacto().getUtilizador().getUsername() + "! sid is: " + idExterno + ", and delivery status is: " + estadoEntrega);
         }
-    }
-
-    private static String getRequiredValueOrReturnNullInstead(JsonObject obj, String property) {
-        if (obj.has(property)) {
-            if (!obj.get(property).getAsString().isEmpty()) {
-                return obj.get(property).getAsString();
-            }
-        }
-        return null;
     }
 
     /*OLD
