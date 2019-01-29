@@ -142,7 +142,6 @@ import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.bennu.spring.security.CSRFTokenRepository;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -159,6 +158,7 @@ import org.fenixedu.bennu.core.domain.User;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
+import javax.naming.SizeLimitExceededException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
@@ -252,6 +252,15 @@ public class AplicacaoResource extends BennuRestResource {
     public JsonElement addAplicacao2(@RequestBody JsonElement body) {
 
         return view(create(body, Aplicacao.class), AplicacaoAdapter.class);
+    }
+
+    @RequestMapping(value = "/recursive", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonElement recursive(@RequestBody JsonElement body) {
+
+        String property = "recipient_id";
+        System.out.println("\n\nresult: " + UtilsResource.getRequiredValueOrReturnNullInsteadRecursive(body.getAsJsonObject(), property));
+
+        return body;
     }
 
     @RequestMapping(value = "/{app}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -657,58 +666,48 @@ public class AplicacaoResource extends BennuRestResource {
 
     //RECEBER NOTIFICACOES DO ESTADO DE ENTREGA DE MENSAGENS POR PARTE DOS CANAIS:
 
+    /*
     @SkipCSRF
     @RequestMapping(value = "/{canal}/messagedeliverystatus", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement messageDeliveryStatus(@PathVariable("canal") Canal canal, HttpServletRequest request) {
+        //Received content might not be JSON, so we do not use "@RequestBody JsonElement body"
 
         if (!FenixFramework.isDomainObjectValid(canal)) {
             throw new NotifcenterException(ErrorsAndWarnings.INVALID_CHANNEL_ERROR);
         }
 
-        //PROBLEMA: Nao pode levar "@RequestBody JsonElement body"!
-        MultiValueMap<String, String> requestParams = HTTPClient.getHttpServletRequestParams(request);///.getAsJsonObject();
-
         System.out.println("####### got new messagedeliverystatus message!!");
         System.out.println(HTTPClient.getHttpServletRequestParamsAsJson(request).toString());
 
-        //TODO - NAO É PRECISO FAZER ESTA DISTINCAO, POIS ESTE RECURSO ESTARÀ DENTRO DE TWILIOWHATSAPPRESOURCE.java!
-        ///TwilioWhatsapp
-        //"MessageStatus":"delivered","MessageSid":"SM9f705525cc4143ef8dece27557549a5f"
-        //if (canal.getClass().getSimpleName().equals("TwilioWhatsapp")) {
-        String idExterno = UtilsResource.getRequiredValueFromMultiValueMap(/*jObj.getAsJsonObject("body").getAsJsonObject()*/requestParams, "MessageSid");
-        String estadoEntrega = UtilsResource.getRequiredValueFromMultiValueMap(/*jObj.getAsJsonObject("body").getAsJsonObject()*/requestParams, "MessageStatus");
-        ///}
+        UserMessageDeliveryStatus ede = canal.dealWithMessageDeliveryStatusCallback(request);
 
-        for (EstadoDeEntregaDeMensagemEnviadaAContacto e : canal.getEstadoDeEntregaDeMensagemEnviadaAContactoSet()) {
-            if (e.getIdExterno().equals(idExterno)) {
-                e.changeEstadoEntrega(estadoEntrega);
-
-                //If there is a message callback, then send message status to the app
-                if (!e.getMensagem().getCallbackUrlEstadoEntrega().equals("none")) {
-
-                    MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
-                    MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-
-                    header.add("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
-                    body.put("MessageId", Collections.singletonList(e.getMensagem().getExternalId()));
-                    body.put("User", Collections.singletonList(e.getContacto().getUtilizador().getUsername())); ///?
-                    body.put("MessageStatus", Collections.singletonList(estadoEntrega));
-
-                    DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
-                    deferredResult.setResultHandler((Object responseEntity) -> {
-                        HTTPClient.printResponseEntity((ResponseEntity<String>) responseEntity); /// anything else to do?
-                    });
-
-                    HTTPClient.restASyncClient(HttpMethod.POST, e.getMensagem().getCallbackUrlEstadoEntrega(), header, body, deferredResult);
-                }
-
-                throw new NotifcenterException(ErrorsAndWarnings.SUCCESS_THANKS);
-            }
+        if (ede == null) {
+            throw new NotifcenterException(ErrorsAndWarnings.UNKNOWN_MESSAGE_SID);
         }
+        else {
 
-        throw new NotifcenterException(ErrorsAndWarnings.UNKNOWN_MESSAGE_SID);
-    }
+            //If message parameter callbackUrlEstadoEntrega is not "none", then send message delivery status to the app
+            if (!ede.getMensagem().getCallbackUrlEstadoEntrega().equals("none")) {
 
+                MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
+                MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+
+                header.add("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
+                body.put("MessageId", Collections.singletonList(ede.getMensagem().getExternalId()));
+                body.put("User", Collections.singletonList(ede.getContacto().getUtilizador().getUsername())); ///?
+                body.put("MessageStatus", Collections.singletonList(ede.getEstadoEntrega()));
+
+                DeferredResult<ResponseEntity<String>> deferredResult = new DeferredResult<>();
+                deferredResult.setResultHandler((Object responseEntity) -> {
+                    HTTPClient.printResponseEntity((ResponseEntity<String>) responseEntity); ///anything else to do?
+                });
+
+                HTTPClient.restASyncClient(HttpMethod.POST, ede.getMensagem().getCallbackUrlEstadoEntrega(), header, body, deferredResult);
+            }
+
+            throw new NotifcenterException(ErrorsAndWarnings.SUCCESS_THANKS);
+        }
+    }*/
 
     @RequestMapping(value = "/{msg}/deliverystatus", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement getMessageStatus(/*@PathVariable("app") Aplicacao app,*/ @PathVariable("msg") Mensagem msg) {
@@ -726,8 +725,8 @@ public class AplicacaoResource extends BennuRestResource {
         JsonArray jArray = new JsonArray();
 
         //TODO -> done.
-        for (EstadoDeEntregaDeMensagemEnviadaAContacto e : msg.getEstadoDeEntregaDeMensagemEnviadaAContactoSet()) {
-            jArray.add(view(e, EstadoDeEntregaDeMensagemEnviadaAContactoAdapter.class));
+        for (UserMessageDeliveryStatus e : msg.getUserMessageDeliveryStatusSet()) {
+            jArray.add(view(e, UserMessageDeliveryStatusAdapter.class));
         }
 
         jObj.add("status", jArray);
@@ -735,6 +734,11 @@ public class AplicacaoResource extends BennuRestResource {
         return jObj;
     }
 
+    //COMO GERAR TOKEN CSRF VALIDO?
+    //notes:
+    //header for token: X-CSRF-TOKEN (taken from CSRFToken)
+    //body param for token: _csrf
+    //link: https://github.com/FenixEdu/bennu/tree/master/bennu-spring/src/main/java/org/fenixedu/bennu/spring/security
     @SkipCSRF
     @RequestMapping(value = "/{app}/sendmensagem", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public JsonElement sendMensagem(@PathVariable("app") Aplicacao app,
@@ -753,6 +757,12 @@ public class AplicacaoResource extends BennuRestResource {
         if (anexos != null) {
             for (MultipartFile file: anexos) {
                 try {
+
+                    long maxSize = Long.parseLong(NotifcenterSpringConfiguration.getConfiguration().notifcenterMensagemAttachmentMaxSizeBytes());
+                    if (file.getSize() > maxSize) {
+                        throw new SizeLimitExceededException();
+                    }
+
                     Attachment at =  Attachment.createAttachment(msg, file.getOriginalFilename(), "lowlevelname-" + msg.getExternalId() + "-" + file.getOriginalFilename(), file.getInputStream());
                     //debug
                     //System.out.println("anexo: " + FileDownloadServlet.getDownloadUrl(at));
@@ -763,6 +773,11 @@ public class AplicacaoResource extends BennuRestResource {
                     //e.printStackTrace();
                     msg.delete(); //apagar mensagem criada em caso de falha num anexo
                     throw new NotifcenterException(ErrorsAndWarnings.INVALID_MESSAGE_ERROR, "Attachment " + file.getOriginalFilename() + " could not be loaded.");
+                }
+                catch (SizeLimitExceededException e) {
+                    msg.delete(); //apagar mensagem criada em caso de falha num anexo
+                    String maxSize = String.valueOf(Long.parseLong(NotifcenterSpringConfiguration.getConfiguration().notifcenterMensagemAttachmentMaxSizeBytes())/(1000000L));
+                    throw new NotifcenterException(ErrorsAndWarnings.INVALID_MESSAGE_ATTACHMENT_SIZE_ERROR, "Attachment " + file.getOriginalFilename() + " exceeds max. file size allowed (" + maxSize + "MB).");
                 }
             }
         }
@@ -1184,7 +1199,9 @@ public class AplicacaoResource extends BennuRestResource {
 
         System.out.println(view(twilioWhatsapp, CanalAdapter.class).toString());
 
-        String t = SistemaNotificacoes.getInstance().getCanaisSet().stream().map(Canal::getEmail).collect(Collectors.joining(","));
+
+        ///setemail()
+        String t = "AAA"; ///SistemaNotificacoes.getInstance().getCanaisSet().stream().map(Canal::getEmail).collect(Collectors.joining(","));
 
         return "emails dos canais: " + t;
     }

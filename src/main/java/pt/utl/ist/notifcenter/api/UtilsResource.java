@@ -11,15 +11,34 @@ import org.joda.time.DateTime;
 import org.springframework.util.MultiValueMap;
 import pt.ist.fenixframework.DomainObject;
 import pt.ist.fenixframework.FenixFramework;
-import pt.utl.ist.notifcenter.domain.AnotacaoCanal;
 import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class UtilsResource {
+
+    public static String getRequiredValueOrReturnNullInsteadRecursive(JsonObject obj, String property) {
+
+        String toReturn = getRequiredValueOrReturnNullInsteadSpecial(obj, property);
+
+        if (toReturn == null) {
+            for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
+
+                //System.out.println("key: " + entry.getKey() + " | value: " + entry.getValue().toString());
+
+                if (entry.getValue() instanceof JsonObject) {
+                    toReturn = getRequiredValueOrReturnNullInsteadRecursive(entry.getValue().getAsJsonObject(), property);
+                }
+
+                if (toReturn != null) {
+                    break;
+                }
+            }
+        }
+
+        return toReturn;
+    }
 
     public static JsonObject stringToJson(String messageJson) {
         try {
@@ -38,6 +57,16 @@ public class UtilsResource {
             }
         }
         throw new NotifcenterException(ErrorsAndWarnings.INVALID_ENTITY_ERROR, "Missing parameter " + property + "!");
+    }
+
+    //Using toString() instead of getAsString()
+    public static String getRequiredValueOrReturnNullInsteadSpecial(JsonObject obj, String property) {
+        if (obj.has(property)) {
+            if (!obj.get(property).toString().isEmpty()) {
+                return obj.get(property).toString().replace("\"", ""); //remove quotes
+            }
+        }
+        return null;
     }
 
     public static String getRequiredValueOrReturnNullInstead(JsonObject obj, String property) {
@@ -63,6 +92,16 @@ public class UtilsResource {
             }
         }
         throw new NotifcenterException(ErrorsAndWarnings.MISSING_PARAMETER_ERROR, "Missing parameter " + key + "!");
+    }
+
+    public static String getRequiredValueFromMultiValueMapOrReturnNullInstead(MultiValueMap<String, String> map, String key) {
+        List<String> value = map.get(key);
+        if (value != null) {
+            if (!value.get(0).isEmpty()) { //here we only return the first parameter found
+                return value.get(0);
+            }
+        }
+        return null;
     }
 
     public static String[] getRequiredArrayValue(JsonObject obj, String property) {

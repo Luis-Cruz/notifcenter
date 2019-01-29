@@ -3,6 +3,7 @@ package pt.utl.ist.notifcenter.domain;
 //import org.springframework.http.ResponseEntity;
 import pt.ist.fenixframework.Atomic;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 
 public abstract class Canal extends Canal_Base {
@@ -25,6 +26,12 @@ public abstract class Canal extends Canal_Base {
 
     public abstract void sendMessage(Mensagem msg); //{ System.out.println("\n\nshould not see this"); }
 
+    public abstract void checkIsMessageAdequateForChannel(Mensagem msg);
+
+    public abstract UserMessageDeliveryStatus dealWithMessageDeliveryStatusCallback(HttpServletRequest request);
+
+    public abstract String getUri();
+
     @Atomic
     public void delete() {
         for (CanalNotificacao cn : this.getCanalNotificacaoSet()) {
@@ -35,7 +42,7 @@ public abstract class Canal extends Canal_Base {
             c.delete();
         }
 
-        for (EstadoDeEntregaDeMensagemEnviadaAContacto e : this.getEstadoDeEntregaDeMensagemEnviadaAContactoSet()) {
+        for (UserMessageDeliveryStatus e : this.getUserMessageDeliveryStatusSet()) {
             e.delete();
         }
 

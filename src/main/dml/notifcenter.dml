@@ -89,19 +89,20 @@ class Attachment extends .org.fenixedu.bennu.io.domain.GenericFile{
 *  Não compreendi o propósito dos atributos email e password nesta entidde.
 */
 class Canal {
-    String email;
-    String password;
+    //String email;
+    //String password;
 }
 
     class Email extends Canal{
-        String endereco;
-        Integer porto;
+        String smtpServer;
+        String smtpPort;
+        String smtpUsername;
+        String smtpPassword;
     }
 
     class Telegram extends Canal{
-        String numeroTelemovel;
-        String ID;
-        String tokenAutorizacao;
+        String access_token;
+        //String uri;
     }
 
     class Mattermost extends Canal{
@@ -110,19 +111,19 @@ class Canal {
     }
 
     class Twitter extends Canal {
-        String numeroTelemovel;
-        String idAplicacao;
-        String chaveAplicacao;    
-        /* Alternativa:
-            String oauth2TokenAcesso;
-            String oauth2SegredoDoToken;
-        */
+        //String numeroTelemovel;
+        String oauth_consumer_key;
+        String oauth_consumer_secret;
+        String oauth_token;
+        String oauth_token_secret;
+        //String uri;
     }
 
     // Assumo que isto também é um canal
     class Messenger extends Canal {
-        String numeroTelemovel;    
-        String tokenAcesso;
+        //String numeroTelemovel;
+        String access_token;
+        //String uri;
     }
 
     // Assumo que isto também é um canal
@@ -135,7 +136,7 @@ class Canal {
         String accountSID;
         String authToken;
         String fromPhoneNumber;
-        String uri;
+        //String uri;
     }
 
 
@@ -154,7 +155,7 @@ class ExemploIdentidade {
 }
 
 
-class EstadoDeEntregaDeMensagemEnviadaAContacto {
+class UserMessageDeliveryStatus {
     String idExterno;
     String estadoEntrega;
 }
@@ -252,22 +253,25 @@ relation AttachmentGroup {
 
 
 
-relation CanalTemEstadosDeEntregaDeMensagensEnviadasAContactos {
+relation CanalTemEstadosDeEntregaDeMensagensEnviadasAUtilizadores {
     Canal playsRole canal { multiplicity 1..1; }
-    EstadoDeEntregaDeMensagemEnviadaAContacto playsRole estadoDeEntregaDeMensagemEnviadaAContacto { multiplicity 0..*; }
+    UserMessageDeliveryStatus playsRole userMessageDeliveryStatus { multiplicity 0..*; }
 }
 
-relation EstadoDeEntregaTemMensagem {
+relation EstadoDeEntregaDeMensagemTemMensagem {
     Mensagem playsRole mensagem { multiplicity 1..1; }
-    EstadoDeEntregaDeMensagemEnviadaAContacto playsRole estadoDeEntregaDeMensagemEnviadaAContacto { multiplicity 0..*; }
+    UserMessageDeliveryStatus playsRole userMessageDeliveryStatus { multiplicity 0..*; }
 }
 
-relation EstadoDeEntregaTemContacto {
+/*relation EstadoDeEntregaDeMensagemTemContacto {
     Contacto playsRole contacto { multiplicity 1..1; }
-    EstadoDeEntregaDeMensagemEnviadaAContacto playsRole estadoDeEntregaDeMensagemEnviadaAContacto { multiplicity 0..*; }
+    UserMessageDeliveryStatus playsRole userMessageDeliveryStatus { multiplicity 0..*; }
+}*/
+
+relation EstadoDeEntregaDeMensagemTemUtilizador {
+    .org.fenixedu.bennu.core.domain.User playsRole utilizador { multiplicity 1..1; }
+    UserMessageDeliveryStatus playsRole userMessageDeliveryStatus { multiplicity 0..*; }
 }
-
-
 
 
 

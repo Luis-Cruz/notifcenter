@@ -6,9 +6,6 @@ import org.fenixedu.bennu.NotifcenterSpringConfiguration;
 import org.fenixedu.bennu.core.annotation.DefaultJsonAdapter;
 import org.fenixedu.bennu.core.json.JsonAdapter;
 import org.fenixedu.bennu.core.json.JsonBuilder;
-import pt.ist.fenixframework.FenixFramework;
-import pt.ist.fenixframework.dml.DomainClass;
-import pt.ist.fenixframework.dml.Slot;
 import pt.utl.ist.notifcenter.api.UtilsResource;
 import pt.utl.ist.notifcenter.domain.AnotacaoCanal;
 import pt.utl.ist.notifcenter.domain.Canal;
@@ -16,7 +13,6 @@ import pt.utl.ist.notifcenter.utils.ErrorsAndWarnings;
 import pt.utl.ist.notifcenter.utils.NotifcenterException;
 import pt.utl.ist.notifcenter.utils.Utils;
 
-import javax.rmi.CORBA.Util;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
@@ -109,7 +105,7 @@ public class CanalAdapter implements JsonAdapter<Canal> {
         JsonObject jObj = new JsonObject();
         jObj.addProperty("id", obj.getExternalId());
         jObj.addProperty("type", obj.getClass().getSimpleName());
-        jObj.addProperty("email", obj.getEmail());
+        ///jObj.addProperty("email", obj.getEmail());
         ///jObj.addProperty("password", obj.getPassword());
 
         try {

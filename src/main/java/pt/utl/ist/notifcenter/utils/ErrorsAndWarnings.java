@@ -6,6 +6,9 @@ import org.springframework.http.HttpStatus;
 
 public enum ErrorsAndWarnings {
 
+    INVALID_ASSUNTO_ERROR ("invalidMessageAssunto", "Invalid message param: assunto", HttpStatus.PRECONDITION_FAILED),
+    INVALID_TEXTO_CURTO_ERROR ("invalidMessageTextoCurto", "Invalid message param: textoCurto", HttpStatus.PRECONDITION_FAILED),
+    INVALID_TEXTO_LONGO_ERROR ("invalidMessageTextoLongo", "Invalid message param: textoLongo", HttpStatus.PRECONDITION_FAILED),
     NOTALLOWED_VIEW_PAGE_ERROR ("notAllowedPage", "No permissions to view this page.", HttpStatus.FORBIDDEN),
     INVALID_JSON_ERROR ("invalidJson", "Invalid JSON data.", HttpStatus.PRECONDITION_FAILED),
     INVALID_DATETIME_ERROR ("invalidDatetime", "Invalid datetime. Valid pattern is dd.MM.yyyy HH:mm:ss.SSS", HttpStatus.PRECONDITION_FAILED),
@@ -21,6 +24,7 @@ public enum ErrorsAndWarnings {
     INVALID_GROUP_ERROR ("invalidGroup", "Invalid group ID.", HttpStatus.PRECONDITION_FAILED),
     INVALID_CANALNOTIFICACAO_ERROR ("invalidCanalNotificacao", "Invalid notification channel.", HttpStatus.PRECONDITION_FAILED),
     INVALID_MESSAGE_ERROR ("invalidMessage", "Invalid message.", HttpStatus.PRECONDITION_FAILED),
+    INVALID_MESSAGE_ATTACHMENT_SIZE_ERROR ("invalidMessageAttachmentSize", "Invalid message attachment size.", HttpStatus.PRECONDITION_FAILED),
     NOTALLOWED_CANALNOTIFICACAO_ERROR ("notAllowedCanalNotificacao", "No permissions to use such notification channel.", HttpStatus.FORBIDDEN),
     NOTALLOWED_GROUP_ERROR ("notAllowedGroup", "No permissions to send messages to group.", HttpStatus.FORBIDDEN),
     NOTALLOWED_TO_ADD_GROUP_ERROR ("notAllowedToAddGroup", "No permissions to add message receiving groups.", HttpStatus.FORBIDDEN),
@@ -30,8 +34,9 @@ public enum ErrorsAndWarnings {
     NOTALLOWED_VIEW_MESSAGE_ERROR ("notAllowedToViewMessage", "No permissions to view such message.", HttpStatus.FORBIDDEN),
     NOTALLOWED_VIEW_ATTACHMENT_ERROR ("notAllowedToViewAttachment", "No permissions to view such attachment.", HttpStatus.FORBIDDEN),
     SUCCESS_THANKS ("none", "Thank you.", HttpStatus.OK),
+    SUCCESS ("none", "definable", HttpStatus.OK),
     MISSING_PARAMETER_ERROR ("missingParameter", "Missing parameter.", HttpStatus.PRECONDITION_FAILED),
-    UNKNOWN_MESSAGE_SID ("unknownMessageSid", "Unknown message SID.", HttpStatus.NOT_FOUND),
+    UNKNOWN_MESSAGE_ID ("unknownMessageId", "Unknown message ID.", HttpStatus.NOT_FOUND),
     ALREADY_EXISTING_RESOURCE ("resourceAlreadyExists", "Resource already exists.", HttpStatus.CONFLICT),
     ALREADY_EXISTING_RELATION_ERROR ("relationAlreadyExists", "Such relation already exists.", HttpStatus.CONFLICT),
     NON_EXISTING_RELATION ("nonExistingRelation", "Such relation does not exist.", HttpStatus.CONFLICT);
